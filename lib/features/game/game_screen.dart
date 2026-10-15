@@ -66,6 +66,11 @@ class _GameScreenState extends State<GameScreen> {
 
   Future<void> _dispatchBack() async {
     switch (backActionFor(_scene)) {
+      case BackAction.confirmExitPausingGame:
+        // 일시정지 화면 대신 화면 전환 없이 멈춰서, 취소하면 바로 이어한다.
+        await _callGameControl('freeze');
+        final exiting = await _confirmExit();
+        if (!exiting) await _callGameControl('resume');
       case BackAction.confirmExit:
         await _confirmExit();
     }

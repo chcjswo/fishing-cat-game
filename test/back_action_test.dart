@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('플레이 중에는 게임을 멈춘 채 종료 확인', () {
+    expect(backActionFor(GameScene.play), BackAction.confirmExitPausingGame);
+  });
+
   test('플레이가 아닌 화면에서는 바로 종료 확인', () {
     for (final scene in GameScene.values.where((s) => s != GameScene.play)) {
       expect(backActionFor(scene), BackAction.confirmExit, reason: scene.name);

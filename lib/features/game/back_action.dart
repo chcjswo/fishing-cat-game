@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 import '../../shared/models/game_scene.dart';
 
 /// Android 뒤로가기가 취할 동작.
-enum BackAction { confirmExit }
+enum BackAction { confirmExitPausingGame, confirmExit }
 
-/// 화면별 뒤로가기 동작: 어디서든 종료 확인 창을 띄운다.
-BackAction backActionFor(GameScene scene) => BackAction.confirmExit;
+/// 화면별 뒤로가기 동작: 어디서든 종료 확인 창을 띄운다. 플레이 중에는
+/// 확인 창이 떠 있는 동안 고양이가 맞거나 시간이 흐르지 않도록 게임을 멈춘다.
+BackAction backActionFor(GameScene scene) => switch (scene) {
+  GameScene.play => BackAction.confirmExitPausingGame,
+  _ => BackAction.confirmExit,
+};
 
 /// 종료 확인 창. '종료'를 고르면 true, '취소'나 바깥 탭으로 닫으면 false.
 Future<bool> showExitConfirmDialog(BuildContext context) async {
