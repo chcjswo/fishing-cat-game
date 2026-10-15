@@ -29,6 +29,26 @@ runBrowser(async () => {
   p.spawn('urchin', p.S.lane, { noWarn: true });
   p.collect(p.S.items.at(-1));
   check(haptics().length === count, '보호 시간 중에도 진동했다');
+
+  // 물고기 받기는 가벼운 진동
+  await delay(200);
+  p.spawn('fish', p.S.lane);
+  p.collect(p.S.items.at(-1));
+  const fish = haptics().at(-1);
+  check(haptics().length === count + 1 && total(fish) < total(hit), `물고기 진동이 가볍지 않다: ${fish}`);
+
+  // FEVER 발동은 피격과 구분되는 패턴
+  p.startFever();
+  const fever = haptics().at(-1);
+  check(String(fever) !== String(hit) && String(fever) !== String(bomb) && String(fever) !== String(fish), `FEVER 진동이 구분되지 않는다: ${fever}`);
+
+  // FEVER 중 연속 수집에서 진동이 매번 울리지 않는다
+  const beforeRain = haptics().length;
+  for (let i = 0; i < 10; i++) {
+    p.spawn('fish', p.S.lane);
+    p.collect(p.S.items.at(-1));
+  }
+  check(haptics().length - beforeRain <= 1, `연속 수집 진동이 과하다: ${haptics().length - beforeRain}회`);
   p.toTitle();
 }, { native: true });
 
@@ -46,4 +66,4 @@ runBrowser(async () => {
   check(!vibrated, '브라우저에서 진동했다');
   probe.toTitle();
 });
-console.log('PASS: 피격·폭탄 진동 패턴, 보호 시간 무진동, 브라우저 무진동');
+console.log('PASS: 피격·폭탄·물고기·FEVER 진동 패턴, 보호 시간 무진동, 연속 수집 제한, 브라우저 무진동');

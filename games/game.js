@@ -310,7 +310,7 @@ function collect(it){
   if(d.cls==='fish'){
     const mul=S.feverOn?2:1, pts=d.pts*mul;
     addScore(pts); popText('+'+pts, cx, cy-30, S.feverOn?'x2':''); setFace('happy',380,it); splats(cx,cy+40,'#bfe8ff',6);
-    d.pts>=300?SFX.big():SFX.eat();
+    d.pts>=300?SFX.big():SFX.eat(); fishHaptic();
     if(!S.feverOn){ S.fever++; if(S.fever>=FEVER_NEED) startFever(); }
     renderFever();
   } else if(d.cls==='trash'){
@@ -340,7 +340,7 @@ function hurt(it){
 
 /* ---------- fever ---------- */
 function startFever(){
-  S.feverOn=true; BG.fever=true; S.feverT=FEVER_TIME; S.fever=0; SFX.fever();
+  S.feverOn=true; BG.fever=true; S.feverT=FEVER_TIME; S.fever=0; SFX.fever(); haptic(HAPTIC.fever);
   $('#game').classList.add('fever'); $('#feverBanner').classList.add('show');
   setTimeout(()=>$('#feverBanner').classList.remove('show'),1500);
   // clear hazards on screen so fever is pure joy
@@ -494,8 +494,16 @@ document.addEventListener('visibilitychange', ()=>{ if(document.hidden && S.runn
 // 보내지 않고 GameControl 전역도 만들지 않아 기존 동작이 그대로다.
 function notifyNative(type, payload){ if(window.NativeBridge) window.NativeBridge.send(type, payload); }
 // 진동 패턴은 navigator.vibrate 형식([진동, 쉼, 진동, ...] ms). 앱에서만 기기 진동으로 재생한다.
-const HAPTIC = { hurt:[55], bomb:[70,40,90] };
+const HAPTIC = { fish:[10], hurt:[55], bomb:[70,40,90], fever:[20,40,20,40,60] };
+// FEVER 중에는 물고기가 비처럼 쏟아져 수집마다 울리면 진동이 끊이지 않으므로 간격을 둔다.
+const FISH_HAPTIC_GAP_MS = 250;
+let lastFishHaptic = -Infinity;
 function haptic(pattern){ notifyNative('haptic',{pattern}); }
+function fishHaptic(){
+  const now=performance.now();
+  if(now-lastFishHaptic<FISH_HAPTIC_GAP_MS) return;
+  lastFishHaptic=now; haptic(HAPTIC.fish);
+}
 if(window.NativeBridge) window.GameControl = {
   // 앱 종료 확인 창이 떠 있는 동안 일시정지 화면 없이 진행만 멈춘다.
   freeze(){ if(S.running && !S.paused) S.frozen=true; },

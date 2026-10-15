@@ -3,6 +3,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   // 게임(games/game.js)의 HAPTIC 패턴 기준
+  test('물고기 받기([10])는 약한 진동', () {
+    expect(hapticStrengthFor([10]), HapticStrength.light);
+  });
+
+  test('FEVER 발동([20,40,20,40,60])은 강한 진동', () {
+    expect(hapticStrengthFor([20, 40, 20, 40, 60]), HapticStrength.heavy);
+  });
+
   test('위험 생물 피격([55])은 중간 진동', () {
     expect(hapticStrengthFor([55]), HapticStrength.medium);
   });
