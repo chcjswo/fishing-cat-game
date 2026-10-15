@@ -52,9 +52,16 @@ android {
 
     buildTypes {
         release {
-            if (hasReleaseKey) {
-                signingConfig = signingConfigs.getByName("release")
-            }
+            // key.properties가 없으면(다른 개발 머신 등) 디버그 키로 대신 서명해
+            // `flutter run --release`가 계속 동작하게 한다. 스토어 제출용은 반드시
+            // key.properties가 있는 상태에서 빌드한다 (docs/release-android.md).
+            signingConfig = signingConfigs.getByName(if (hasReleaseKey) "release" else "debug")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 }
