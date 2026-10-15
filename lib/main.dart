@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: 'BaseApp',
+      title: 'catfishing',
       home: Scaffold(),
       debugShowCheckedModeBanner: false,
     );
