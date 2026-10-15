@@ -41,7 +41,7 @@ void main() {
         .substring(source.path.length + 1)
         .replaceAll(Platform.pathSeparator, '/');
     final bytes = entity.readAsBytesSync();
-    final (targetPath, output) = _optimized(relative, bytes);
+    final (targetPath, output) = _bundledCopy(relative, bytes);
 
     final target = File('${destination.path}/$targetPath');
     target.parent.createSync(recursive: true);
@@ -57,9 +57,9 @@ void main() {
   );
 }
 
-/// 앱 번들에 넣을 경로와 내용. 배경은 JPG로, 스프라이트는 축소 PNG로,
-/// 게임 소스는 배경 경로를 JPG로 고친 사본으로 바꾼다.
-(String, Uint8List) _optimized(String relative, Uint8List bytes) {
+// 앱 번들에 넣을 경로와 내용. 배경은 JPG로, 스프라이트는 축소 PNG로,
+// 게임 소스는 배경 경로를 JPG로 고친 사본으로 바꾼다.
+(String, Uint8List) _bundledCopy(String relative, Uint8List bytes) {
   if (isBackground(relative)) {
     return (backgroundJpegPath(relative), backgroundToJpeg(bytes));
   }
@@ -71,5 +71,4 @@ void main() {
   return (relative, bytes);
 }
 
-String _megabytes(int bytes) =>
-    '${(bytes / 1024 / 1024).toStringAsFixed(1)}MB';
+String _megabytes(int bytes) => '${(bytes / 1024 / 1024).toStringAsFixed(1)}MB';

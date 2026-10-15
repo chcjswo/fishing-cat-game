@@ -7,9 +7,9 @@ import 'dart:typed_data';
 
 import 'package:image/image.dart' as img;
 
-/// 스프라이트 긴 변 한도. 게임 좌표 최대 표시 크기(약 220px)의 2배 이상이라
-/// 고해상도 화면에서도 원본 대비 열화가 보이지 않는다.
-const int spriteMaxSide = 512;
+/// 스프라이트 긴 변 한도. 가장 크게 그려지는 펭귄(246px)을 1440px 폭 폰
+/// 배율(약 2.25배)로 그려도 확대 보간이 일어나지 않는 크기다.
+const int spriteMaxSide = 640;
 
 const int backgroundJpegQuality = 85;
 
@@ -22,7 +22,7 @@ String backgroundJpegPath(String relativePath) =>
 
 String rewriteBackgroundReferences(String source) => source.replaceAllMapped(
   _backgroundPng,
-  (match) => 'assets/backgrounds/${match.group(1)}.jpg',
+  (match) => backgroundJpegPath(match.group(0)!),
 );
 
 Uint8List backgroundToJpeg(Uint8List pngBytes) =>
@@ -31,16 +31,12 @@ Uint8List backgroundToJpeg(Uint8List pngBytes) =>
 Uint8List optimizeSprite(Uint8List pngBytes, {int maxSide = spriteMaxSide}) {
   final image = img.decodePng(pngBytes)!;
   if (image.width <= maxSide && image.height <= maxSide) return pngBytes;
-  final resized = image.width >= image.height
-      ? img.copyResize(
-          image,
-          width: maxSide,
-          interpolation: img.Interpolation.average,
-        )
-      : img.copyResize(
-          image,
-          height: maxSide,
-          interpolation: img.Interpolation.average,
-        );
+  final isLandscape = image.width >= image.height;
+  final resized = img.copyResize(
+    image,
+    width: isLandscape ? maxSide : null,
+    height: isLandscape ? null : maxSide,
+    interpolation: img.Interpolation.average,
+  );
   return img.encodePng(resized, level: 9);
 }
