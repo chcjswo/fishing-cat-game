@@ -1,0 +1,64 @@
+name: baseapp
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_native_splash: ^2.4.8
+  go_router: ^18.0.2
+  flutter_riverpod: ^3.4.3
+  flutter_dotenv: ^6.0.1
+  google_fonts: ^9.0.0
+  permission_handler: ^13.0.2
+  intl: ^0.20.3
+  http: ^1.6.0
+  package_info_plus: ^10.2.2
+  url_launcher: ^6.3.3
+  cached_network_image: ^4.0.4
+  cupertino_icons: ^2.0.0
+  quick_actions: ^1.1.1
+
+flutter_native_splash:
+  color: "#000000"
+  image: "assets/icons/splash.png"
+  android: true
+  ios: true
+  android_12:
+    color: "#000000"
+    # Android 12+는 스플래시 아이콘을 중앙 2/3 원으로 마스킹하므로 여백을 넣은 전용 이미지를 사용
+    image: "assets/icons/splash_android12.png"
+  fullscreen: false
+  android_gravity: center
+  ios_content_mode: center
+  web: false
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icons/icon.png"
+  min_sdk_android: 21
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/icons/
+    - .env
+

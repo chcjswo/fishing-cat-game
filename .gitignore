@@ -1,0 +1,154 @@
+# ========================================
+# Flutter / Dart
+# ========================================
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# 버전 관리에 필요 없는 임시/로그 파일
+*.log
+*.tmp
+*.swp
+*.sqlite
+
+# macOS 시스템 파일
+.DS_Store
+
+# Generated plugin registrant
+**/GeneratedPluginRegistrant.*
+
+# ========================================
+# Flutter Platform: iOS
+# ========================================
+ios/Flutter/*.xcconfig
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/.last_build_id
+
+# CocoaPods
+ios/Pods/
+ios/Podfile.lock
+
+# Xcode User Settings
+ios/Runner.xcworkspace/
+ios/build/
+ios/.generated/
+ios/exportOptions.plist
+ios/Runner/GeneratedPluginRegistrant.*
+
+# iOS User-specific files
+**/*.mode1v3
+**/*.mode2v3
+**/*.perspectivev3
+**/xcuserdata/
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# ========================================
+# Flutter Platform: Android
+# ========================================
+android/.gradle/
+android/.idea/
+android/local.properties
+android/app/key.jks
+android/key.properties
+android/build/
+android/app/build/
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/*/build/
+
+# JetBrains / IDEA
+android/.idea/
+*.iml
+*.ipr
+*.iws
+
+# Gradle Cache
+.gradle/
+
+# Signing files
+*.keystore
+*.jks
+key.properties
+
+# Java compiled files
+*.class
+
+# ========================================
+# Flutter Platform: Web
+# ========================================
+web/.dart_tool/
+web/build/
+
+# ========================================
+# Flutter Platform: macOS
+# ========================================
+macos/Flutter/Flutter-Debug.xcconfig
+macos/Flutter/Flutter-Release.xcconfig
+macos/Flutter/Flutter-Profile.xcconfig
+macos/Flutter/GeneratedPluginRegistrant.swift
+macos/Flutter/.last_build_id
+
+macos/Pods/
+macos/Podfile.lock
+macos/build/
+
+# ========================================
+# Flutter Platform: Windows
+# ========================================
+windows/flutter/ephemeral/
+windows/flutter/generated_plugin_registrant.cc
+windows/flutter/generated_plugin_registrant.h
+windows/flutter/generated_plugins.cmake
+windows/build/
+
+# ========================================
+# Flutter Platform: Linux
+# ========================================
+linux/flutter/ephemeral/
+linux/flutter/generated_plugin_registrant.cc
+linux/flutter/generated_plugin_registrant.h
+linux/flutter/generated_plugins.cmake
+linux/build/
+
+# ========================================
+# Tooling / IDE
+# ========================================
+# VSCode
+.vscode/
+.history/
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# ========================================
+# Project files to ignore
+# ========================================
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Firebase
+google-services.json
+GoogleService-Info.plist
+
+# Debugging files
+coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Claude Code 로컬 설정
+.claude/settings.local.json
