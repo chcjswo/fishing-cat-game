@@ -6,7 +6,7 @@ const LANES = [85, 320, 555];
 const CAT_TOP = 780, CAT_W = 176;
 const GAME_TIME = 60;
 const MAX_LIFE = 3;
-const TEST_MODE = true;
+const TEST_MODE = false;
 const FEVER_NEED = 18, FEVER_TIME = 7;
 
 const STAGES = [
@@ -490,6 +490,7 @@ sb.addEventListener('click', ()=>{ soundOn=!soundOn; localStorage.setItem('fc_so
 document.addEventListener('visibilitychange', ()=>{ if(document.hidden && S.running && !S.paused) togglePause(); });
 
 /* ---------- init ---------- */
+$('#testModeLabel').hidden=!TEST_MODE;
 build(); fit(); placeCat(); renderHearts(); renderScore(); renderTime(); renderFever(); toTitle();
 
 })();
