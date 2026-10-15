@@ -3,6 +3,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'features/game/game_screen.dart';
+import 'shared/services/game_server.dart';
+
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
@@ -10,6 +13,8 @@ void main() async {
 
   // 스플래시 화면 유지
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  await gameServer.start();
 
   runApp(const ProviderScope(child: MyApp()));
 
@@ -23,7 +28,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'catfishing',
-      home: Scaffold(),
+      home: GameScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
