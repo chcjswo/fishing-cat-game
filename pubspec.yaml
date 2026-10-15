@@ -45,8 +45,10 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/icons/icon.png"
-  adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/icons/icon.png"
+  # 아이콘 원본은 python tool/make_icon.py 로 생성한다.
+  adaptive_icon_background: "#96D7F0"
+  adaptive_icon_foreground: "assets/icons/icon_foreground.png"
+  remove_alpha_ios: true
   min_sdk_android: 21
 
 flutter:
