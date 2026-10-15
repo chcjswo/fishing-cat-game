@@ -332,7 +332,7 @@ function hurt(it){
   const f=document.createElement('div'); f.className=it.type==='bomb'?'flash bomb-flash':'flash'; $('#fx').appendChild(f); setTimeout(()=>f.remove(),350);
   const w=$('#world'); w.classList.remove('shake'); void w.offsetWidth; w.classList.add('shake');
   popText(it.def.hitText||(it.type==='bomb'?'펑!':'앗!'), cx, CAT_TOP-10, 'neg');
-  setFace(it.type==='bomb'?'burnt':'hurt',it.type==='bomb'?1200:900); SFX.hurt();
+  setFace(it.type==='bomb'?'burnt':'hurt',it.type==='bomb'?1200:900); SFX.hurt(); haptic(it.type==='bomb'?HAPTIC.bomb:HAPTIC.hurt);
   S.invuln=1.2; const c=$('#cat'); c.classList.remove('blink');
   if(it.type!=='bomb'){ void c.offsetWidth; c.classList.add('blink'); }
   if(S.lives<=0) endStage(false,'lives');
@@ -493,6 +493,9 @@ document.addEventListener('visibilitychange', ()=>{ if(document.hidden && S.runn
 // 앱(WebView)에서만 window.NativeBridge가 주입된다. 브라우저에서는 이벤트를
 // 보내지 않고 GameControl 전역도 만들지 않아 기존 동작이 그대로다.
 function notifyNative(type, payload){ if(window.NativeBridge) window.NativeBridge.send(type, payload); }
+// 진동 패턴은 navigator.vibrate 형식([진동, 쉼, 진동, ...] ms). 앱에서만 기기 진동으로 재생한다.
+const HAPTIC = { hurt:[55], bomb:[70,40,90] };
+function haptic(pattern){ notifyNative('haptic',{pattern}); }
 if(window.NativeBridge) window.GameControl = {
   // 앱 종료 확인 창이 떠 있는 동안 일시정지 화면 없이 진행만 멈춘다.
   freeze(){ if(S.running && !S.paused) S.frozen=true; },
