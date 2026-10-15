@@ -61,4 +61,24 @@ void main() {
     );
     expect(missing, isEmpty);
   });
+
+  test('게임은 외부 네트워크 자원을 참조하지 않는다 (오프라인 완결)', () async {
+    final html = await rootBundle.loadString('$gameRoot/index.html');
+    expect(RegExp(r'''(src|href)=["']https?://''').hasMatch(html), isFalse);
+  });
+
+  test('게임 글꼴(Galmuri) 파일이 번들된다', () async {
+    final css = await rootBundle.loadString('$gameRoot/fonts/galmuri.css');
+    final fontFiles = RegExp(
+      r"url\('\./([\w-]+\.woff2)'\)",
+    ).allMatches(css).map((match) => 'fonts/${match.group(1)}');
+    expect(fontFiles, isNotEmpty);
+
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    final bundled = manifest.listAssets().toSet();
+    for (final font in fontFiles) {
+      expect(bundled, contains('$gameRoot/$font'));
+    }
+    expect(bundled, contains('$gameRoot/fonts/ofl.md'));
+  });
 }

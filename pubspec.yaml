@@ -56,4 +56,5 @@ flutter:
     - assets/game/
     - assets/game/assets/
     - assets/game/assets/backgrounds/
+    - assets/game/fonts/
 
