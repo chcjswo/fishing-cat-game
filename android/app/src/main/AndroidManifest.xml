@@ -4,9 +4,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <!-- 게임 햅틱 진동 -->
     <uses-permission android:name="android.permission.VIBRATE"/>
-    
-    <!-- 광고 ID 권한 (Android 13+ 필수) -->
-    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+
+    <!-- 1차 출시는 광고가 없어 광고 ID 권한(com.google.android.gms.permission.AD_ID)을
+         선언하지 않는다. AdMob 도입 시 다시 추가한다. -->
 
     <application
         android:label="낚시냥"
