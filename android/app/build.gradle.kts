@@ -35,20 +35,26 @@ android {
         versionName = flutter.versionName
     }
 
+    // key.properties 가 없는 환경(새 클론·디버그 빌드)에서도 구성이 실패하지 않도록
+    // 키가 있을 때만 release 서명을 만든다.
+    val hasReleaseKey = keyStoreProperties.getProperty("storeFile") != null
+
     signingConfigs {
-        create("release") {
-            storeFile = file(keyStoreProperties.getProperty("storeFile"))
-            storePassword = keyStoreProperties.getProperty("storePassword")
-            keyAlias = keyStoreProperties.getProperty("keyAlias")
-            keyPassword = keyStoreProperties.getProperty("keyPassword")
+        if (hasReleaseKey) {
+            create("release") {
+                storeFile = file(keyStoreProperties.getProperty("storeFile"))
+                storePassword = keyStoreProperties.getProperty("storePassword")
+                keyAlias = keyStoreProperties.getProperty("keyAlias")
+                keyPassword = keyStoreProperties.getProperty("keyPassword")
+            }
         }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("release")
+            if (hasReleaseKey) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 }
