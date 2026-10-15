@@ -152,3 +152,6 @@ app.*.map.json
 
 # Claude Code 로컬 설정
 .claude/settings.local.json
+
+# tool/sync_game_assets.dart 가 games/ 에서 생성하는 게임 자산
+/assets/game/

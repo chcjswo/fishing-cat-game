@@ -51,4 +51,8 @@ flutter:
   assets:
     - assets/icons/
     - .env
+    # 게임 자산은 tool/sync_game_assets.dart 로 games/ 에서 동기화된다.
+    - assets/game/
+    - assets/game/assets/
+    - assets/game/assets/backgrounds/
 

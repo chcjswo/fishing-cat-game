@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>낚시냥 — Fishing Cat</title>
+<link rel="preload" href="assets/fx_bomb.png" as="image">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri/dist/galmuri.css">
+<link rel="stylesheet" href="game.css?v=28">
+</head>
+<body>
+<div id="viewport">
+ <div id="game" class="day">
+  <div id="world">
+   <canvas id="bg" class="px"></canvas>
+   <div id="feverRays"></div>
+   <div id="penguins">
+    <div class="pg l"><img class="a" src="assets/peng_side.png" alt=""><img class="b" src="assets/peng_pull.png" alt=""></div>
+    <div class="pg c"><img class="a" src="assets/peng_back.png" alt=""><img class="b" src="assets/peng_back.png" alt=""></div>
+    <div class="pg r"><img class="a" src="assets/peng_side.png" alt=""><img class="b" src="assets/peng_pull.png" alt=""></div>
+   </div>
+   <div id="cat" class="st-idle">
+    <div class="shadow"></div>
+    <div class="body">
+     <img class="m m-idle" src="assets/cat_idle.png" alt="">
+     <img class="m m-happy" src="assets/cat_happy_empty.png" alt="">
+     <img id="heldFish" class="px" alt="" hidden>
+     <img class="m m-hurt" src="assets/cat_hurt.png" alt="">
+     <img class="m m-burnt" src="assets/cat_burnt.png" alt="">
+    </div>
+   </div>
+   <div id="items"></div>
+   <div id="fx"></div>
+   <div id="blastFx"></div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+   <div class="scorebox pxbox"><img class="ficon" src="assets/i_fish.png" alt=""><div id="score">0</div></div>
+   <div class="hud-right">
+    <div id="hearts"></div>
+    <button id="btnPause" class="pxbtn blue" aria-label="일시정지"><i></i><i></i></button>
+   </div>
+   <div class="timebar pxbar"><div id="timeFill"></div><span id="timeText">1:00</span></div>
+   <div class="row3">
+    <div class="fever"><b>FEVER</b><div class="fbar pxbar"><div id="feverFill"></div></div></div>
+    <div class="stageinfo"><span id="stageLabel">STAGE 1</span><span id="testModeLabel">테스트 모드</span><span id="targetLabel">0 / 3,500</span></div>
+   </div>
+  </div>
+
+  <button class="arrow left" id="btnL" aria-label="왼쪽"></button>
+  <button class="arrow right" id="btnR" aria-label="오른쪽"></button>
+
+  <div id="feverBanner"><span>FEVER TIME!</span><small>물고기가 비처럼 쏟아져요 · 점수 2배</small></div>
+  <div id="callout"></div>
+
+  <!-- TITLE -->
+  <section id="title" class="screen show" data-screen-label="01 Title">
+   <canvas id="titleBg" class="px"></canvas>
+   <div class="logo"><span class="l1">Fishing</span><span class="l2">Cat</span></div>
+   <div class="best" id="bestTitle"></div>
+   <img class="t-peng" src="assets/peng_pull.png" alt="">
+   <img class="t-fish" src="assets/i_fish.png" alt="">
+   <img class="t-cat" src="assets/cat_happy.png?v=19" alt="">
+   <button class="pxbtn red big" id="btnStart">START</button>
+   <div class="t-icons">
+    <button class="pxbtn blue sq" id="btnSound" aria-label="사운드"><span class="on">♪</span><span class="off">✕</span></button>
+    <button class="pxbtn blue sq" id="btnCredits" aria-label="크레딧">…</button>
+   </div>
+  </section>
+
+  <!-- CREDITS -->
+  <section id="credits" class="screen modal" data-screen-label="02 Credits">
+   <div class="card pxbox">
+    <div class="card-head">CREDITS</div>
+    <dl>
+     <dt>PLAN</dt><dd>Tony, Griffin</dd>
+     <dt>PROGRAM</dt><dd>Tony</dd>
+     <dt>DESIGN</dt><dd>Griffin</dd>
+    </dl>
+    <div class="btns"><button class="pxbtn blue" data-close>닫기</button></div>
+   </div>
+  </section>
+
+  <!-- STAGE INTRO -->
+  <section id="intro" class="screen modal" data-screen-label="03 Stage Intro">
+   <div class="card pxbox">
+    <div class="card-head" id="introTitle">STAGE 1</div>
+    <div class="intro-sub" id="introSub">맑은 바다</div>
+    <div class="intro-goal">목표 <b id="introGoal">2,500</b>점 · 제한시간 <b>60</b>초</div>
+    <ul class="legend" id="legend"></ul>
+    <div class="btns"><button class="pxbtn red" id="btnGo">시작!</button></div>
+   </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="screen modal" data-screen-label="04 Result">
+   <div class="card pxbox">
+    <div class="card-head" id="resTitle">STAGE CLEAR</div>
+    <div class="stars" id="resStars"></div>
+    <img class="res-cat" id="resCat" src="assets/cat_happy.png" alt="">
+    <dl class="res">
+     <dt>스테이지 점수</dt><dd id="resStage">0</dd>
+     <dt>총 점수</dt><dd id="resTotal">0</dd>
+     <dt>최고 점수</dt><dd id="resBest">0</dd>
+    </dl>
+    <div class="btns">
+     <button class="pxbtn brown" id="btnHome">처음으로</button>
+     <button class="pxbtn red" id="btnNext">다음 스테이지</button>
+    </div>
+   </div>
+  </section>
+
+  <!-- PAUSE -->
+  <section id="pause" class="screen modal" data-screen-label="05 Pause">
+   <div class="card pxbox">
+    <div class="card-head">PAUSE</div>
+    <div class="btns">
+     <button class="pxbtn brown" id="btnQuit">처음으로</button>
+     <button class="pxbtn red" id="btnResume">계속하기</button>
+    </div>
+   </div>
+  </section>
+ </div>
+</div>
+<script src="pixel.js?v=28"></script>
+<script src="game.js?v=73"></script>
+</body>
+</html>
