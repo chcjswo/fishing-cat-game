@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: 'catfishing',
+      title: '낚시냥',
       home: GameScreen(),
       debugShowCheckedModeBanner: false,
     );

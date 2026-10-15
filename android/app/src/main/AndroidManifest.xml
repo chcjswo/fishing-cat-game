@@ -9,7 +9,7 @@
     <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
 
     <application
-        android:label="catfishing"
+        android:label="낚시냥"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:networkSecurityConfig="@xml/network_security_config">
