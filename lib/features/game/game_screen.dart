@@ -1,11 +1,13 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import '../../shared/models/game_scene.dart';
 import '../../shared/services/game_server.dart';
 import '../../shared/services/native_bridge.dart';
+import 'back_action.dart';
 
 /// 낚시냥 게임을 표시하는 전체 화면 WebView.
 class GameScreen extends StatefulWidget {
@@ -49,30 +51,63 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  /// 종료 확인이 떠 있는 동안 뒤로가기 연타로 확인 창이 겹쳐 쌓이지 않게 한다.
+  bool _handlingBack = false;
+
+  Future<void> _handleBack() async {
+    if (_handlingBack) return;
+    _handlingBack = true;
+    try {
+      await _dispatchBack();
+    } finally {
+      _handlingBack = false;
+    }
+  }
+
+  Future<void> _dispatchBack() async {
+    switch (backActionFor(_scene)) {
+      case BackAction.confirmExit:
+        await _confirmExit();
+    }
+  }
+
+  /// 종료 확인 후 종료를 고르면 앱을 닫는다. 앱을 닫는 중이면 true.
+  Future<bool> _confirmExit() async {
+    final shouldExit = await showExitConfirmDialog(context);
+    if (shouldExit) await SystemNavigator.pop();
+    return shouldExit;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      // 노치·홈 인디케이터 영역은 검은 레터박스로 남겨 HUD가 가려지지 않게 한다.
-      body: SafeArea(
-        child: InAppWebView(
-          initialUrlRequest: URLRequest(url: WebUri(gameUrl)),
-          initialSettings: InAppWebViewSettings(
-            // 게임이 START 터치에서 AudioContext를 깨우므로 사용자 제스처 요구를
-            // 꺼서 첫 터치 이후 효과음이 바로 나오게 한다.
-            mediaPlaybackRequiresUserGesture: false,
-            allowsInlineMediaPlayback: true,
-            supportZoom: false,
-            disableHorizontalScroll: true,
-            disableVerticalScroll: true,
-            overScrollMode: OverScrollMode.NEVER,
-            transparentBackground: false,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _handleBack();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        // 노치·홈 인디케이터 영역은 검은 레터박스로 남겨 HUD가 가려지지 않게 한다.
+        body: SafeArea(
+          child: InAppWebView(
+            initialUrlRequest: URLRequest(url: WebUri(gameUrl)),
+            initialSettings: InAppWebViewSettings(
+              // 게임이 START 터치에서 AudioContext를 깨우므로 사용자 제스처 요구를
+              // 꺼서 첫 터치 이후 효과음이 바로 나오게 한다.
+              mediaPlaybackRequiresUserGesture: false,
+              allowsInlineMediaPlayback: true,
+              supportZoom: false,
+              disableHorizontalScroll: true,
+              disableVerticalScroll: true,
+              overScrollMode: OverScrollMode.NEVER,
+              transparentBackground: false,
+            ),
+            initialUserScripts: UnmodifiableListView([NativeBridge.userScript]),
+            onWebViewCreated: (controller) {
+              _webView = controller;
+              _bridge.attach(controller);
+            },
           ),
-          initialUserScripts: UnmodifiableListView([NativeBridge.userScript]),
-          onWebViewCreated: (controller) {
-            _webView = controller;
-            _bridge.attach(controller);
-          },
         ),
       ),
     );
