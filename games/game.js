@@ -189,7 +189,7 @@ const S = {
   ambT:0,
   running:false, paused:false, stage:0, score:0, stageStart:0, stageScore:0,
   lives:MAX_LIFE, lane:1, time:GAME_TIME, spawnT:0, items:[], fever:0, feverOn:false, feverT:0,
-  invuln:0, last:0, lastTick:0,
+  invuln:0, last:0, lastTick:0, frozen:false,
 };
 let best = +localStorage.getItem('fc_best') || 0;
 
@@ -357,7 +357,7 @@ let loopOn=false, lastRaf=0;
 function tick(){
   if(!S.running) return;
   const now=performance.now(); const dt=Math.min(.05,(now-S.last)/1000); if(dt<.004) return; S.last=now;
-  if(!S.paused) step(dt);
+  if(!S.paused && !S.frozen) step(dt);
 }
 function startLoop(){
   if(loopOn) return; loopOn=true;
@@ -407,8 +407,8 @@ function step(dt){
 }
 
 /* ---------- flow ---------- */
-function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('show', s.id===id)); }
-function hideAll(){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('show')); }
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('show', s.id===id)); notifyNative('screen',{screen:id}); }
+function hideAll(){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('show')); notifyNative('screen',{screen:'play'}); }
 function clearItems(){ S.items.forEach(i=>{i.el.remove(); i.warnEl&&i.warnEl.remove();}); S.items=[]; $('#fx').innerHTML=''; }
 function applyTheme(background=STAGES[S.stage].background){ const st=STAGES[S.stage], g=$('#game'); g.classList.remove('day','sunset','night'); g.classList.add(st.theme); BG&&BG.setTheme(st.theme,background,!!background&&st.backgroundPixelated); const next=STAGES[S.stage+1]; if(BG&&background&&next?.background) BG.loadBackground(next.background); }
 
@@ -488,6 +488,18 @@ $('#credits').addEventListener('click', e=>{ if(e.target.id==='credits') show('t
 const sb=$('#btnSound'); sb.classList.toggle('off',!soundOn);
 sb.addEventListener('click', ()=>{ soundOn=!soundOn; localStorage.setItem('fc_sound',soundOn?'on':'off'); sb.classList.toggle('off',!soundOn); SFX.eat(); });
 document.addEventListener('visibilitychange', ()=>{ if(document.hidden && S.running && !S.paused) togglePause(); });
+
+/* ---------- native app ---------- */
+// 앱(WebView)에서만 window.NativeBridge가 주입된다. 브라우저에서는 이벤트를
+// 보내지 않고 GameControl 전역도 만들지 않아 기존 동작이 그대로다.
+function notifyNative(type, payload){ if(window.NativeBridge) window.NativeBridge.send(type, payload); }
+if(window.NativeBridge) window.GameControl = {
+  // 앱 종료 확인 창이 떠 있는 동안 일시정지 화면 없이 진행만 멈춘다.
+  freeze(){ if(S.running && !S.paused) S.frozen=true; },
+  resume(){ S.frozen=false; S.last=performance.now(); },
+  // 앱이 백그라운드로 갈 때 플레이 중이면 일시정지 화면으로 전환한다.
+  pause(){ if(S.running && !S.paused){ S.frozen=false; togglePause(); } },
+};
 
 /* ---------- init ---------- */
 $('#testModeLabel').hidden=!TEST_MODE;

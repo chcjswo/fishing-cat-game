@@ -1,11 +1,31 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
+import '../../shared/models/game_scene.dart';
 import '../../shared/services/game_server.dart';
+import '../../shared/services/native_bridge.dart';
 
 /// 낚시냥 게임을 표시하는 전체 화면 WebView.
-class GameScreen extends StatelessWidget {
+class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
+
+  @override
+  State<GameScreen> createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<GameScreen> {
+  final NativeBridge _bridge = NativeBridge();
+  GameScene _scene = GameScene.title;
+
+  @override
+  void initState() {
+    super.initState();
+    _bridge.on('screen', (payload) {
+      _scene = GameScene.fromName(payload['screen'] as String?) ?? _scene;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +46,8 @@ class GameScreen extends StatelessWidget {
             overScrollMode: OverScrollMode.NEVER,
             transparentBackground: false,
           ),
+          initialUserScripts: UnmodifiableListView([NativeBridge.userScript]),
+          onWebViewCreated: _bridge.attach,
         ),
       ),
     );
