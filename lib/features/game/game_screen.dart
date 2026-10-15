@@ -11,18 +11,21 @@ class GameScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: InAppWebView(
-        initialUrlRequest: URLRequest(url: WebUri(gameUrl)),
-        initialSettings: InAppWebViewSettings(
-          // 게임이 START 터치에서 AudioContext를 깨우므로 사용자 제스처 요구를
-          // 꺼서 첫 터치 이후 효과음이 바로 나오게 한다.
-          mediaPlaybackRequiresUserGesture: false,
-          allowsInlineMediaPlayback: true,
-          supportZoom: false,
-          disableHorizontalScroll: true,
-          disableVerticalScroll: true,
-          overScrollMode: OverScrollMode.NEVER,
-          transparentBackground: false,
+      // 노치·홈 인디케이터 영역은 검은 레터박스로 남겨 HUD가 가려지지 않게 한다.
+      body: SafeArea(
+        child: InAppWebView(
+          initialUrlRequest: URLRequest(url: WebUri(gameUrl)),
+          initialSettings: InAppWebViewSettings(
+            // 게임이 START 터치에서 AudioContext를 깨우므로 사용자 제스처 요구를
+            // 꺼서 첫 터치 이후 효과음이 바로 나오게 한다.
+            mediaPlaybackRequiresUserGesture: false,
+            allowsInlineMediaPlayback: true,
+            supportZoom: false,
+            disableHorizontalScroll: true,
+            disableVerticalScroll: true,
+            overScrollMode: OverScrollMode.NEVER,
+            transparentBackground: false,
+          ),
         ),
       ),
     );
