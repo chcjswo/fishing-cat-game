@@ -164,6 +164,7 @@ img{-webkit-user-drag:none;user-select:none}
 .card dd{text-align:right}
 .btns{display:flex;gap:26px;justify-content:center;align-items:center;flex-wrap:nowrap}
 .btns .pxbtn{min-width:180px}
+.share-row{margin-top:22px}#shareRow[hidden]{display:none}
 
 .intro-sub{text-align:center;font:bold 30px 'Galmuri11';color:#8a5a2a}
 .intro-goal{text-align:center;font:20px 'Galmuri11';color:#333;margin:14px 0 24px}

@@ -453,6 +453,7 @@ function endStage(timeUp, why){
     if(clear && !last){ nb.textContent='다음 스테이지'; nb.onclick=()=>{S.stage++; openIntro();}; }
     else if(clear && last){ nb.textContent='다시 하기'; nb.onclick=()=>newGame(); }
     else { nb.textContent='다시 도전'; nb.onclick=()=>{ S.score=S.stageStart; S.lives=MAX_LIFE; openIntro(); }; }
+    $('#shareRow').hidden=!window.NativeBridge;
     clear?SFX.clear():SFX.fail();
     show('result');
   }, why==='lives'?700:300);
@@ -482,6 +483,7 @@ $('#btnQuit').addEventListener('click', toTitle);
 $('#btnHome').addEventListener('click', toTitle);
 $('#btnStart').addEventListener('click', ()=>{ tone(1,.01,'sine',.001); newGame(); });
 $('#btnGo').addEventListener('click', beginStage);
+$('#btnShare').addEventListener('click', ()=>notifyNative('share',{score:S.score, stage:S.stage+1, best}));
 $('#btnCredits').addEventListener('click', ()=>show('credits'));
 $('#credits [data-close]').addEventListener('click', ()=>show('title'));
 $('#credits').addEventListener('click', e=>{ if(e.target.id==='credits') show('title'); });

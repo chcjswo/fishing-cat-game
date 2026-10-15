@@ -8,6 +8,7 @@ import '../../shared/models/game_scene.dart';
 import '../../shared/services/game_server.dart';
 import '../../shared/services/haptics.dart';
 import '../../shared/services/native_bridge.dart';
+import '../../shared/services/score_share.dart';
 import 'back_action.dart';
 
 /// 낚시냥 게임을 표시하는 전체 화면 WebView.
@@ -32,6 +33,11 @@ class _GameScreenState extends State<GameScreen> {
     });
     // 게임의 진동 패턴을 기기 햅틱으로 재생한다.
     _bridge.on('haptic', (payload) => playHaptic(payload['pattern']));
+    // 결과 화면의 공유 버튼 → OS 공유 시트
+    _bridge.on(
+      'share',
+      (payload) => shareScore(payload, origin: _screenRect()),
+    );
     // 홈 이동·전화 수신 등으로 앱이 비활성화되면 플레이 중인 게임을 일시정지
     // 화면으로 돌린다. 게임의 visibilitychange 처리가 WebView에서 항상
     // 오지는 않으므로 앱 생명주기로 보완한다 (플레이 중 여부는 게임이 판단).
@@ -44,6 +50,11 @@ class _GameScreenState extends State<GameScreen> {
   void dispose() {
     _lifecycle.dispose();
     super.dispose();
+  }
+
+  Rect? _screenRect() {
+    final box = context.findRenderObject() as RenderBox?;
+    return box == null ? null : box.localToGlobal(Offset.zero) & box.size;
   }
 
   /// 게임의 GameControl 메서드를 존재 가드와 함께 호출한다.

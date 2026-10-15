@@ -16,6 +16,8 @@ dependencies:
   flutter_dotenv: ^6.0.1
   # stable 6.1.5는 AGP 9에서 proguard-android.txt 미지원으로 Android 빌드 실패 → stable 출시 시 교체
   flutter_inappwebview: 6.2.0-beta.3
+  share_plus: ^13.3.1
+  intl: ^0.20.3
 
 flutter_native_splash:
   color: "#000000"
