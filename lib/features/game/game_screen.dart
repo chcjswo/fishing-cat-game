@@ -17,6 +17,8 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   final NativeBridge _bridge = NativeBridge();
+  InAppWebViewController? _webView;
+  late final AppLifecycleListener _lifecycle;
   GameScene _scene = GameScene.title;
 
   @override
@@ -25,6 +27,26 @@ class _GameScreenState extends State<GameScreen> {
     _bridge.on('screen', (payload) {
       _scene = GameScene.fromName(payload['screen'] as String?) ?? _scene;
     });
+    // 홈 이동·전화 수신 등으로 앱이 비활성화되면 플레이 중인 게임을 일시정지
+    // 화면으로 돌린다. 게임의 visibilitychange 처리가 WebView에서 항상
+    // 오지는 않으므로 앱 생명주기로 보완한다 (플레이 중 여부는 게임이 판단).
+    _lifecycle = AppLifecycleListener(
+      onInactive: () => _callGameControl('pause'),
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
+  }
+
+  /// 게임의 GameControl 메서드를 존재 가드와 함께 호출한다.
+  Future<void> _callGameControl(String method) async {
+    await _webView?.evaluateJavascript(
+      source:
+          'window.GameControl && GameControl.$method && GameControl.$method();',
+    );
   }
 
   @override
@@ -47,7 +69,10 @@ class _GameScreenState extends State<GameScreen> {
             transparentBackground: false,
           ),
           initialUserScripts: UnmodifiableListView([NativeBridge.userScript]),
-          onWebViewCreated: _bridge.attach,
+          onWebViewCreated: (controller) {
+            _webView = controller;
+            _bridge.attach(controller);
+          },
         ),
       ),
     );
