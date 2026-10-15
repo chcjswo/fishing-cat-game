@@ -23,9 +23,8 @@ void main() async {
 
   await gameServer.start();
 
+  // 스플래시는 게임 페이지가 다 로드된 뒤 GameScreen이 걷어낸다 (빈 화면 방지).
   runApp(const ProviderScope(child: MyApp()));
-
-  FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatelessWidget {

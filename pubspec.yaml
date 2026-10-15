@@ -19,16 +19,18 @@ dependencies:
   share_plus: ^13.3.1
   intl: ^0.20.3
 
+# 스플래시 이미지는 python tool/make_icon.py 로 생성한다. 아이콘과 같은 하늘색 배경으로
+# 게임 타이틀(하늘)까지 자연스럽게 잇는다.
 flutter_native_splash:
-  color: "#000000"
+  color: "#96D7F0"
   image: "assets/icons/splash.png"
   android: true
   ios: true
   android_12:
-    color: "#000000"
+    color: "#96D7F0"
     # Android 12+는 스플래시 아이콘을 중앙 2/3 원으로 마스킹하므로 여백을 넣은 전용 이미지를 사용
     image: "assets/icons/splash_android12.png"
-  fullscreen: false
+  fullscreen: true
   android_gravity: center
   ios_content_mode: center
   web: false

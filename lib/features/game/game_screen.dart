@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import '../../shared/models/game_scene.dart';
 import '../../shared/services/game_server.dart';
@@ -126,6 +127,10 @@ class _GameScreenState extends State<GameScreen> {
               _webView = controller;
               _bridge.attach(controller);
             },
+            // 게임 페이지가 다 로드되면 스플래시를 걷어내 빈 화면 없이 타이틀로
+            // 넘어간다. 로드 실패 시에도 스플래시에 갇히지 않도록 함께 걷어낸다.
+            onLoadStop: (_, _) => FlutterNativeSplash.remove(),
+            onReceivedError: (_, _, _) => FlutterNativeSplash.remove(),
           ),
         ),
       ),

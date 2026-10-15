@@ -3,7 +3,8 @@
 
 사용법 (저장소 루트에서): python tool/make_icon.py
 결과: assets/icons/icon.png (1024 풀블리드), assets/icons/icon_foreground.png
-(Android 적응형 아이콘 전경, 투명 배경·중앙 세이프존)
+(Android 적응형 아이콘 전경, 투명 배경·중앙 세이프존), assets/icons/splash.png·
+splash_android12.png (네이티브 스플래시, 아이콘과 같은 하늘색 배경 위에 표시)
 """
 from pathlib import Path
 
@@ -63,4 +64,25 @@ foreground.alpha_composite(
 )
 foreground.save(OUT_DIR / "icon_foreground.png")
 
-print("saved:", OUT_DIR / "icon.png", OUT_DIR / "icon_foreground.png")
+# 스플래시: 투명 배경 고양이 (배경색은 flutter_native_splash 설정)
+splash = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+splash_cat = cat(600)
+splash.alpha_composite(
+    splash_cat, ((SIZE - splash_cat.width) // 2, (SIZE - splash_cat.height) // 2)
+)
+splash.save(OUT_DIR / "splash.png")
+
+# Android 12+ 스플래시: 1152 캔버스의 중앙 지름 768 원 밖은 잘리므로 그 안에 둔다
+ANDROID12_SIZE = 1152
+splash12 = Image.new("RGBA", (ANDROID12_SIZE, ANDROID12_SIZE), (0, 0, 0, 0))
+splash12_cat = cat(520)
+splash12.alpha_composite(
+    splash12_cat,
+    (
+        (ANDROID12_SIZE - splash12_cat.width) // 2,
+        (ANDROID12_SIZE - splash12_cat.height) // 2,
+    ),
+)
+splash12.save(OUT_DIR / "splash_android12.png")
+
+print("saved:", sorted(path.name for path in OUT_DIR.iterdir()))
