@@ -12,11 +12,11 @@ const List<String> gameSourceFiles = [
 ];
 
 // 게임 소스에서 참조하는 이미지 경로(게임 루트 기준)를 모은다.
-// 정적 경로(`assets/xxx.png`), 아이템 헬퍼 `img('name')`이 만드는
+// 정적 경로(`assets/xxx.png`, 앱용으로 압축된 배경 `.jpg`), 아이템 헬퍼 `img('name')`이 만드는
 // `assets/i_name.png`, 결과 화면이 `'assets/'+catImg+'.png'`로 조립하는
 // 고양이 이름(`'cat_xxx'`)을 모두 포함한다.
 Set<String> referencedImages(Iterable<String> sources) {
-  final staticPath = RegExp(r'assets/[\w./-]+\.png');
+  final staticPath = RegExp(r'assets/[\w./-]+\.(png|jpg)');
   final itemImage = RegExp(r"img\('(\w+)'\)");
   final catName = RegExp(r"'(cat_\w+)'");
   return {
