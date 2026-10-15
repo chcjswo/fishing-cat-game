@@ -63,8 +63,15 @@ void main() {
   });
 
   test('게임은 외부 네트워크 자원을 참조하지 않는다 (오프라인 완결)', () async {
-    final html = await rootBundle.loadString('$gameRoot/index.html');
-    expect(RegExp(r'''(src|href)=["']https?://''').hasMatch(html), isFalse);
+    // 주석 속 라이선스 URL 같은 텍스트는 요청이 아니므로, 실제로 자원을
+    // 불러오는 속성·CSS url()·JS 문자열 리터럴의 외부 URL만 찾는다.
+    final externalLoad = RegExp(
+      r'''(src|href)\s*=\s*["']https?://|url\(\s*["']?https?://|["'`]https?://''',
+    );
+    for (final file in [...gameSourceFiles, 'fonts/galmuri.css']) {
+      final source = await rootBundle.loadString('$gameRoot/$file');
+      expect(externalLoad.hasMatch(source), isFalse, reason: file);
+    }
   });
 
   test('게임 글꼴(Galmuri) 파일이 번들된다', () async {
