@@ -1,6 +1,6 @@
-name: catfishing
-description: "A new Flutter project."
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+name: fishing_cat_game
+description: "fishing cat game"
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
 
@@ -54,7 +54,6 @@ flutter_launcher_icons:
   min_sdk_android: 21
 
 flutter:
-
   uses-material-design: true
 
   assets:
@@ -65,4 +64,3 @@ flutter:
     - assets/game/assets/
     - assets/game/assets/backgrounds/
     - assets/game/fonts/
-

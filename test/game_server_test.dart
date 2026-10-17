@@ -1,4 +1,4 @@
-import 'package:catfishing/shared/services/game_server.dart';
+import 'package:fishing_cat_game/shared/services/game_server.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 

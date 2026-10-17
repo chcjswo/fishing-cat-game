@@ -1,5 +1,5 @@
-import 'package:catfishing/features/game/back_action.dart';
-import 'package:catfishing/shared/models/game_scene.dart';
+import 'package:fishing_cat_game/features/game/back_action.dart';
+import 'package:fishing_cat_game/shared/models/game_scene.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

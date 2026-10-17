@@ -1,5 +1,5 @@
-import 'package:catfishing/shared/models/game_scene.dart';
-import 'package:catfishing/shared/services/native_bridge.dart';
+import 'package:fishing_cat_game/shared/models/game_scene.dart';
+import 'package:fishing_cat_game/shared/services/native_bridge.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-import 'package:catfishing/shared/services/score_share.dart';
+import 'package:fishing_cat_game/shared/services/score_share.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
