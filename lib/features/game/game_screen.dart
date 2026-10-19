@@ -44,6 +44,9 @@ class _GameScreenState extends State<GameScreen> {
     // 오지는 않으므로 앱 생명주기로 보완한다 (플레이 중 여부는 게임이 판단).
     _lifecycle = AppLifecycleListener(
       onInactive: () => _callGameControl('pause'),
+      // 앱이 보이지 않는 동안에는 타이틀 음악 등 배경 음악이 새지 않게 멈춘다.
+      onHide: () => _callGameControl('muteMusic'),
+      onShow: () => _callGameControl('unmuteMusic'),
     );
   }
 
