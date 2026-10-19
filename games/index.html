@@ -6,7 +6,7 @@
 <title>낚시냥 — Fishing Cat</title>
 <link rel="preload" href="assets/fx_bomb.png" as="image">
 <link rel="stylesheet" href="fonts/galmuri.css">
-<link rel="stylesheet" href="game.css?v=28">
+<link rel="stylesheet" href="game.css?v=29">
 </head>
 <body>
 <div id="viewport">
@@ -65,6 +65,7 @@
    <button class="pxbtn red big" id="btnStart">START</button>
    <div class="t-icons">
     <button class="pxbtn blue sq" id="btnSound" aria-label="사운드"><span class="on">♪</span><span class="off">✕</span></button>
+    <button class="pxbtn blue sq" id="btnSettings" aria-label="설정">⚙&#xFE0E;</button>
     <button class="pxbtn blue sq" id="btnCredits" aria-label="크레딧">…</button>
    </div>
   </section>
@@ -78,6 +79,15 @@
      <dt>PROGRAM</dt><dd>Tony</dd>
      <dt>DESIGN</dt><dd>Griffin</dd>
     </dl>
+    <div class="btns"><button class="pxbtn blue" data-close>닫기</button></div>
+   </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="settings" class="screen modal" data-screen-label="06 Settings">
+   <div class="card pxbox">
+    <div class="card-head">SETTINGS</div>
+    <label class="setting">음악<input type="range" id="musicVolume" min="0" max="100" step="10" aria-label="음악 볼륨"><b id="musicVolumeText">100</b></label>
     <div class="btns"><button class="pxbtn blue" data-close>닫기</button></div>
    </div>
   </section>
@@ -125,6 +135,6 @@
  </div>
 </div>
 <script src="pixel.js?v=28"></script>
-<script src="game.js?v=73"></script>
+<script src="game.js?v=74"></script>
 </body>
 </html>

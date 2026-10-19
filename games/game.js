@@ -215,7 +215,7 @@ function loadTrack(src){
 }
 const MUSIC = { title:loadTrack('assets/sounds/intro.mp3'), play:loadTrack('assets/sounds/game_bgm.mp3') };
 // 화면별 곡과 재생 여부. 일시정지는 위치를 유지하고, 목록에 없는 화면은 음악을 끈다.
-const SCREEN_MUSIC = { title:['title',true], credits:['title',true], pause:['play',false] };
+const SCREEN_MUSIC = { title:['title',true], credits:['title',true], settings:['title',true], pause:['play',false] };
 let music={track:null, playing:false}, musicSuspended=false;
 function setMusic(track, playing=true){ music={track,playing}; applyMusic(); }
 function applyMusic(){
@@ -530,6 +530,12 @@ $('#btnShare').addEventListener('click', ()=>notifyNative('share',{score:S.score
 $('#btnCredits').addEventListener('click', ()=>show('credits'));
 $('#credits [data-close]').addEventListener('click', ()=>show('title'));
 $('#credits').addEventListener('click', e=>{ if(e.target.id==='credits') show('title'); });
+$('#btnSettings').addEventListener('click', ()=>show('settings'));
+$('#settings [data-close]').addEventListener('click', ()=>show('title'));
+$('#settings').addEventListener('click', e=>{ if(e.target.id==='settings') show('title'); });
+const mv=$('#musicVolume'), mvText=$('#musicVolumeText');
+mv.value=mvText.textContent=musicVolume;
+mv.addEventListener('input', ()=>{ setMusicVolume(Number(mv.value)); mvText.textContent=mv.value; });
 const sb=$('#btnSound'); sb.classList.toggle('off',!soundOn);
 sb.addEventListener('click', ()=>{ soundOn=!soundOn; localStorage.setItem('fc_sound',soundOn?'on':'off'); sb.classList.toggle('off',!soundOn); applyMusic(); SFX.eat(); });
 document.addEventListener('visibilitychange', ()=>{ suspendMusic(document.hidden); if(document.hidden && S.running && !S.paused) togglePause(); });
