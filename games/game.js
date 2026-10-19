@@ -159,10 +159,16 @@ addEventListener('resize', fit);
 
 /* ---------- audio ---------- */
 let actx=null, soundOn = localStorage.getItem('fc_sound') !== 'off';
+// 페이지 로드 시 만들어진 컨텍스트는 브라우저에서 suspended로 시작하므로, 사용할 때마다 깨운다.
+function audioCtx(){
+  actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+  if(actx.state==='suspended') actx.resume();
+  return actx;
+}
 function tone(f, d=.1, type='square', vol=.08, slide=0, delay=0){
   if(!soundOn) return;
   try{
-    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    audioCtx();
     const t = actx.currentTime + delay;
     const o = actx.createOscillator(), g = actx.createGain();
     o.type=type; o.frequency.setValueAtTime(f,t);
@@ -188,9 +194,23 @@ const SFX = {
 // 타이틀은 intro, 플레이 중에는 게임 BGM을 반복 재생한다 (사운드 끄기를 따른다).
 // 앱의 로컬 서버는 Range 요청을 지원하지 않아 iOS가 mp3를 스트리밍하지 못하므로
 // 파일을 통째로 받아 blob URL로 재생한다.
+// iOS WebView는 audio.volume을 무시하므로 음악 볼륨은 GainNode로 조절한다.
+let musicVolume = Number(localStorage.getItem('fc_music_volume') ?? 100), musicGain=null;
+function musicOutput(){
+  if(!musicGain){ const c=audioCtx(); musicGain=c.createGain(); musicGain.gain.value=musicVolume/100; musicGain.connect(c.destination); }
+  return musicGain;
+}
+function setMusicVolume(v){
+  musicVolume=v; localStorage.setItem('fc_music_volume', v);
+  if(musicGain) musicGain.gain.value=v/100;
+}
 function loadTrack(src){
   const a=new Audio(); a.loop=true;
-  fetch(src).then(r=>r.blob()).then(b=>{ a.src=URL.createObjectURL(b); applyMusic(); }).catch(()=>{});
+  fetch(src).then(r=>r.blob()).then(b=>{
+    a.src=URL.createObjectURL(b);
+    audioCtx().createMediaElementSource(a).connect(musicOutput());
+    applyMusic();
+  }).catch(()=>{});
   return a;
 }
 const MUSIC = { title:loadTrack('assets/sounds/intro.mp3'), play:loadTrack('assets/sounds/game_bgm.mp3') };
@@ -201,7 +221,7 @@ function setMusic(track, playing=true){ music={track,playing}; applyMusic(); }
 function applyMusic(){
   for(const [name,a] of Object.entries(MUSIC)){
     if(name!==music.track){ a.pause(); a.currentTime=0; continue; }
-    if(music.playing && soundOn && !musicSuspended && a.src) a.play().catch(()=>{}); else a.pause();
+    if(music.playing && soundOn && !musicSuspended && a.src){ audioCtx(); a.play().catch(()=>{}); } else a.pause();
   }
 }
 // 앱이 백그라운드로 가면 화면과 관계없이 음악을 멈춘다.
