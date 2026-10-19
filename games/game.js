@@ -165,6 +165,19 @@ function audioCtx(){
   if(actx.state==='suspended') actx.resume();
   return actx;
 }
+// 음악·효과음 볼륨(0~100). iOS WebView는 audio.volume을 무시하므로 GainNode로 조절하고 저장한다.
+function volumeChannel(key){
+  let volume=Number(localStorage.getItem(key) ?? 100), gain=null;
+  return {
+    get volume(){ return volume; },
+    output(){
+      if(!gain){ const c=audioCtx(); gain=c.createGain(); gain.gain.value=volume/100; gain.connect(c.destination); }
+      return gain;
+    },
+    set(v){ volume=v; localStorage.setItem(key, v); if(gain) gain.gain.value=v/100; },
+  };
+}
+const MUSIC_VOLUME=volumeChannel('fc_music_volume'), SFX_VOLUME=volumeChannel('fc_sfx_volume');
 function tone(f, d=.1, type='square', vol=.08, slide=0, delay=0){
   if(!soundOn) return;
   try{
@@ -174,7 +187,7 @@ function tone(f, d=.1, type='square', vol=.08, slide=0, delay=0){
     o.type=type; o.frequency.setValueAtTime(f,t);
     if(slide) o.frequency.exponentialRampToValueAtTime(Math.max(40,f+slide), t+d);
     g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.001,t+d);
-    o.connect(g).connect(actx.destination); o.start(t); o.stop(t+d+.02);
+    o.connect(g).connect(SFX_VOLUME.output()); o.start(t); o.stop(t+d+.02);
   }catch(e){}
 }
 const SFX = {
@@ -194,21 +207,11 @@ const SFX = {
 // 타이틀은 intro, 플레이 중에는 게임 BGM을 반복 재생한다 (사운드 끄기를 따른다).
 // 앱의 로컬 서버는 Range 요청을 지원하지 않아 iOS가 mp3를 스트리밍하지 못하므로
 // 파일을 통째로 받아 blob URL로 재생한다.
-// iOS WebView는 audio.volume을 무시하므로 음악 볼륨은 GainNode로 조절한다.
-let musicVolume = Number(localStorage.getItem('fc_music_volume') ?? 100), musicGain=null;
-function musicOutput(){
-  if(!musicGain){ const c=audioCtx(); musicGain=c.createGain(); musicGain.gain.value=musicVolume/100; musicGain.connect(c.destination); }
-  return musicGain;
-}
-function setMusicVolume(v){
-  musicVolume=v; localStorage.setItem('fc_music_volume', v);
-  if(musicGain) musicGain.gain.value=v/100;
-}
 function loadTrack(src){
   const a=new Audio(); a.loop=true;
   fetch(src).then(r=>r.blob()).then(b=>{
     a.src=URL.createObjectURL(b);
-    audioCtx().createMediaElementSource(a).connect(musicOutput());
+    audioCtx().createMediaElementSource(a).connect(MUSIC_VOLUME.output());
     applyMusic();
   }).catch(()=>{});
   return a;
@@ -534,8 +537,8 @@ $('#btnSettings').addEventListener('click', ()=>show('settings'));
 $('#settings [data-close]').addEventListener('click', ()=>show('title'));
 $('#settings').addEventListener('click', e=>{ if(e.target.id==='settings') show('title'); });
 const mv=$('#musicVolume'), mvText=$('#musicVolumeText');
-mv.value=mvText.textContent=musicVolume;
-mv.addEventListener('input', ()=>{ setMusicVolume(Number(mv.value)); mvText.textContent=mv.value; });
+mv.value=mvText.textContent=MUSIC_VOLUME.volume;
+mv.addEventListener('input', ()=>{ MUSIC_VOLUME.set(Number(mv.value)); mvText.textContent=mv.value; });
 const sb=$('#btnSound'); sb.classList.toggle('off',!soundOn);
 sb.addEventListener('click', ()=>{ soundOn=!soundOn; localStorage.setItem('fc_sound',soundOn?'on':'off'); sb.classList.toggle('off',!soundOn); applyMusic(); SFX.eat(); });
 document.addEventListener('visibilitychange', ()=>{ suspendMusic(document.hidden); if(document.hidden && S.running && !S.paused) togglePause(); });
