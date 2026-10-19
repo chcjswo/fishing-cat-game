@@ -19,15 +19,15 @@ dependencies:
   share_plus: ^13.3.1
   intl: ^0.20.3
 
-# 스플래시 이미지는 python tool/make_icon.py 로 생성한다. 아이콘과 같은 하늘색 배경으로
-# 게임 타이틀(하늘)까지 자연스럽게 잇는다.
+# 스플래시 이미지(검정 배경 mocadev 로고)는 직접 제작한 에셋이다.
+# splash_android12.png는 splash.png의 로고를 Android 12 마스크 원 안에 맞춰 축소한 이미지.
 flutter_native_splash:
-  color: "#96D7F0"
+  color: "#000000"
   image: "assets/icons/splash.png"
   android: true
   ios: true
   android_12:
-    color: "#96D7F0"
+    color: "#000000"
     # Android 12+는 스플래시 아이콘을 중앙 2/3 원으로 마스킹하므로 여백을 넣은 전용 이미지를 사용
     image: "assets/icons/splash_android12.png"
   fullscreen: true
