@@ -215,7 +215,7 @@ img{-webkit-user-drag:none;user-select:none}
 #btnSound .off{display:none}#btnSound.off .on{display:none}#btnSound.off .off{display:inline}
 
 /* ---------- settings ---------- */
-.setting{display:flex;align-items:center;gap:24px;margin:10px 10px 44px;font:bold 30px 'Galmuri11';color:#1a0f08}
-.setting input{flex:1;margin:0;height:20px;-webkit-appearance:none;appearance:none;background:#d9bf7c;box-shadow:0 0 0 4px #3a2412}
+.setting{display:grid;grid-template-columns:110px 1fr 64px;align-items:center;gap:24px;margin:10px 10px 44px;font:bold 30px 'Galmuri11';color:#1a0f08}
+.setting input{margin:0;height:20px;-webkit-appearance:none;appearance:none;background:#d9bf7c;box-shadow:0 0 0 4px #3a2412}
 .setting input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:36px;height:48px;border:0;background:#e8581c;box-shadow:inset 0 -6px 0 #b8400f,0 0 0 4px #3a2412}
 .setting b{min-width:64px;text-align:right;color:#e3591b}

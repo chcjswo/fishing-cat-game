@@ -536,9 +536,14 @@ $('#credits').addEventListener('click', e=>{ if(e.target.id==='credits') show('t
 $('#btnSettings').addEventListener('click', ()=>show('settings'));
 $('#settings [data-close]').addEventListener('click', ()=>show('title'));
 $('#settings').addEventListener('click', e=>{ if(e.target.id==='settings') show('title'); });
-const mv=$('#musicVolume'), mvText=$('#musicVolumeText');
-mv.value=mvText.textContent=MUSIC_VOLUME.volume;
-mv.addEventListener('input', ()=>{ MUSIC_VOLUME.set(Number(mv.value)); mvText.textContent=mv.value; });
+function bindVolumeSlider(id, channel, preview){
+  const input=$('#'+id), text=$('#'+id+'Text');
+  input.value=text.textContent=channel.volume;
+  input.addEventListener('input', ()=>{ channel.set(Number(input.value)); text.textContent=input.value; preview&&preview(); });
+}
+bindVolumeSlider('musicVolume', MUSIC_VOLUME);
+// 효과음은 계속 나오지 않으므로 조절할 때마다 한 번 들려준다.
+bindVolumeSlider('sfxVolume', SFX_VOLUME, SFX.eat);
 const sb=$('#btnSound'); sb.classList.toggle('off',!soundOn);
 sb.addEventListener('click', ()=>{ soundOn=!soundOn; localStorage.setItem('fc_sound',soundOn?'on':'off'); sb.classList.toggle('off',!soundOn); applyMusic(); SFX.eat(); });
 document.addEventListener('visibilitychange', ()=>{ suspendMusic(document.hidden); if(document.hidden && S.running && !S.paused) togglePause(); });
