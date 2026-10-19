@@ -3,6 +3,7 @@
 enum GameScene {
   title,
   credits,
+  settings,
   intro,
   play,
   pause,
