@@ -184,6 +184,29 @@ const SFX = {
   fail:()=>{[392,330,262].forEach((f,i)=>tone(f,.25,'triangle',.08,0,i*.18));},
 };
 
+/* ---------- music ---------- */
+// 타이틀은 intro, 플레이 중에는 게임 BGM을 반복 재생한다 (사운드 끄기를 따른다).
+// 앱의 로컬 서버는 Range 요청을 지원하지 않아 iOS가 mp3를 스트리밍하지 못하므로
+// 파일을 통째로 받아 blob URL로 재생한다.
+function loadTrack(src){
+  const a=new Audio(); a.loop=true;
+  fetch(src).then(r=>r.blob()).then(b=>{ a.src=URL.createObjectURL(b); applyMusic(); }).catch(()=>{});
+  return a;
+}
+const MUSIC = { title:loadTrack('assets/sounds/intro.mp3'), play:loadTrack('assets/sounds/game_bgm.mp3') };
+// 화면별 곡과 재생 여부. 일시정지는 위치를 유지하고, 목록에 없는 화면은 음악을 끈다.
+const SCREEN_MUSIC = { title:['title',true], credits:['title',true], pause:['play',false] };
+let music={track:null, playing:false}, musicSuspended=false;
+function setMusic(track, playing=true){ music={track,playing}; applyMusic(); }
+function applyMusic(){
+  for(const [name,a] of Object.entries(MUSIC)){
+    if(name!==music.track){ a.pause(); a.currentTime=0; continue; }
+    if(music.playing && soundOn && !musicSuspended && a.src) a.play().catch(()=>{}); else a.pause();
+  }
+}
+// 앱이 백그라운드로 가면 화면과 관계없이 음악을 멈춘다.
+function suspendMusic(on){ musicSuspended=on; applyMusic(); }
+
 /* ---------- state ---------- */
 const S = {
   ambT:0,
@@ -407,8 +430,8 @@ function step(dt){
 }
 
 /* ---------- flow ---------- */
-function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('show', s.id===id)); notifyNative('screen',{screen:id}); }
-function hideAll(){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('show')); notifyNative('screen',{screen:'play'}); }
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('show', s.id===id)); setMusic(...(SCREEN_MUSIC[id]||[null])); notifyNative('screen',{screen:id}); }
+function hideAll(){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('show')); setMusic('play'); notifyNative('screen',{screen:'play'}); }
 function clearItems(){ S.items.forEach(i=>{i.el.remove(); i.warnEl&&i.warnEl.remove();}); S.items=[]; $('#fx').innerHTML=''; }
 function applyTheme(background=STAGES[S.stage].background){ const st=STAGES[S.stage], g=$('#game'); g.classList.remove('day','sunset','night'); g.classList.add(st.theme); BG&&BG.setTheme(st.theme,background,!!background&&st.backgroundPixelated); const next=STAGES[S.stage+1]; if(BG&&background&&next?.background) BG.loadBackground(next.background); }
 
@@ -488,8 +511,8 @@ $('#btnCredits').addEventListener('click', ()=>show('credits'));
 $('#credits [data-close]').addEventListener('click', ()=>show('title'));
 $('#credits').addEventListener('click', e=>{ if(e.target.id==='credits') show('title'); });
 const sb=$('#btnSound'); sb.classList.toggle('off',!soundOn);
-sb.addEventListener('click', ()=>{ soundOn=!soundOn; localStorage.setItem('fc_sound',soundOn?'on':'off'); sb.classList.toggle('off',!soundOn); SFX.eat(); });
-document.addEventListener('visibilitychange', ()=>{ if(document.hidden && S.running && !S.paused) togglePause(); });
+sb.addEventListener('click', ()=>{ soundOn=!soundOn; localStorage.setItem('fc_sound',soundOn?'on':'off'); sb.classList.toggle('off',!soundOn); applyMusic(); SFX.eat(); });
+document.addEventListener('visibilitychange', ()=>{ suspendMusic(document.hidden); if(document.hidden && S.running && !S.paused) togglePause(); });
 
 /* ---------- native app ---------- */
 // 앱(WebView)에서만 window.NativeBridge가 주입된다. 브라우저에서는 이벤트를
@@ -512,6 +535,9 @@ if(window.NativeBridge) window.GameControl = {
   resume(){ S.frozen=false; S.last=performance.now(); },
   // 앱이 백그라운드로 갈 때 플레이 중이면 일시정지 화면으로 전환한다.
   pause(){ if(S.running && !S.paused){ S.frozen=false; togglePause(); } },
+  // visibilitychange가 WebView에서 항상 오지는 않으므로 앱 생명주기로 음악을 멈추고 재개한다.
+  muteMusic(){ suspendMusic(true); },
+  unmuteMusic(){ suspendMusic(false); },
 };
 
 /* ---------- init ---------- */
