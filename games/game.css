@@ -8,7 +8,7 @@ img{-webkit-user-drag:none;user-select:none}
 #world{position:absolute;inset:0}
 #world.shake{animation:shake .36s steps(6)}
 @keyframes shake{0%,100%{transform:none}20%{transform:translate(-12px,4px)}40%{transform:translate(8px,-8px)}60%{transform:translate(-8px,4px)}80%{transform:translate(4px,-4px)}}
-#bg{position:absolute;left:0;top:0;width:640px;height:1024px;image-rendering:auto}
+#bg{position:absolute;left:0;top:0;width:640px;height:100%;image-rendering:auto}
 
 /* fever rays */
 #feverRays{position:absolute;left:50%;top:210px;width:1500px;height:1500px;margin:-750px 0 0 -750px;opacity:0;transition:opacity .3s;mix-blend-mode:screen;

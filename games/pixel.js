@@ -66,9 +66,9 @@ function rail(ctx,t,top){
   const by=top+34;
   R(ctx,w2,0,by,PW,7); R(ctx,w0,0,by+1,PW,4); R(ctx,w1,0,by+4,PW,1);
 }
-function deck(ctx,t,top){
+function deck(ctx,t,top,bottom){
   const [d0,d1,d2]=t.deck;
-  R(ctx,d0,0,top,PW,PH-top);
+  R(ctx,d0,0,top,PW,bottom-top);
   const rows=[top, top+11, top+23, top+34, top+46];
   rows.forEach((y,i)=>{
     R(ctx,d2,0,y,PW,1); R(ctx,'rgba(255,255,255,.28)',0,y+1,PW,1);
@@ -81,7 +81,9 @@ function deck(ctx,t,top){
 }
 
 class PixelBG {
-  constructor(canvas){ this.c=canvas; this.c.width=PW*4; this.c.height=PH*4; this.ctx=canvas.getContext('2d'); this.ctx.scale(4,4); this.theme='day'; this.t=0; this.clouds=[[20,56,34],[96,72,28],[130,40,22],[60,86,40]]; this.last=0; this.fever=false; }
+  constructor(canvas){ this.c=canvas; this.ctx=canvas.getContext('2d'); this.resize(0); this.theme='day'; this.t=0; this.clouds=[[20,56,34],[96,72,28],[130,40,22],[60,86,40]]; this.last=0; this.fever=false; }
+  // extra: 게임 높이에 더해진 px(4의 배수). 늘어난 만큼 하늘·바다를 키우고 난간·부두는 아래로 내린다.
+  resize(extra){ this.e=extra/4; this.c.width=PW*4; this.c.height=(PH+this.e)*4; this.ctx.scale(4,4); if(this.theme) this.draw(this.t); }
   loadBackground(src){
     this.backgrounds ||= new Map();
     if(!this.backgrounds.has(src)){
@@ -95,25 +97,27 @@ class PixelBG {
   setTheme(k,background,pixelated=false){ this.theme=k; this.pixelated=!!pixelated; this.c.style.imageRendering=this.pixelated?'pixelated':'auto'; this.background=background?this.loadBackground(background):null; this.draw(this.t); }
   draw(time){
     this.t=time;
-    const ctx=this.ctx, t=THEMES[this.theme];
+    const ctx=this.ctx, t=THEMES[this.theme], e=this.e;
     if(this.background?.complete && this.background.naturalWidth){
       // Preserve scenery detail; the foreground still uses the original pixel grid.
       ctx.save();
       ctx.setTransform(1,0,0,1,0,0);
       ctx.imageSmoothingEnabled=!this.pixelated;
       ctx.imageSmoothingQuality='high';
-      ctx.drawImage(this.background,0,0,PW*4,213*4);
+      // 비율을 유지한 채 세로를 채우고 넘치는 좌우는 가운데 기준으로 잘라낸다.
+      const img=this.background, dh=(213+e)*4, dw=dh*img.naturalWidth/img.naturalHeight;
+      ctx.drawImage(img,(PW*4-dw)/2,0,dw,dh);
       ctx.restore();
     } else {
-    sky(ctx,t,0,104,time,this.theme);
+    sky(ctx,t,0,104+e,time,this.theme);
     if(!this.fever) sun(ctx,t,this.theme);
     this.clouds.forEach(([x,y,w],i)=>{ const xx=((x - time*(2+i*.7))%(PW+60)+PW+60)%(PW+60)-40; cloud(ctx,xx,y,w,t.cloud); });
     // gulls
     if(this.theme!=='night'){ [[0,62,1],[1,74,.7]].forEach(([i,y,s])=>{ const gx=((time*14*s+i*90)%(PW+20))-10; const up=((time*5+i)|0)%2; R(ctx,'#4a5a6a',Math.round(gx),y,1,1); R(ctx,'#4a5a6a',Math.round(gx)-2,y-(up?1:-1)+ (up?0:0),2,1); R(ctx,'#4a5a6a',Math.round(gx)+1,y-(up?1:-1),2,1); R(ctx,'#4a5a6a',Math.round(gx)-3,y-(up?2:0),1,1); R(ctx,'#4a5a6a',Math.round(gx)+3,y-(up?2:0),1,1); }); }
-    sea(ctx,t,100,212,time);
+    sea(ctx,t,100+e,212+e,time);
     }
-    rail(ctx,t,175);
-    deck(ctx,t,213);
+    rail(ctx,t,175+e);
+    deck(ctx,t,213+e,PH+e);
   }
   start(){ const t0=performance.now(); this.draw(0); setInterval(()=>{ try{ this.draw((performance.now()-t0)/1000); }catch(e){ console.error(e); } }, 90); }
 }
