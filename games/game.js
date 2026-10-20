@@ -6,7 +6,8 @@ const W = 640, BASE_H = 1024;
 const MAX_EXTRA = 512;
 let H = BASE_H, EXTRA = 0;
 const LANES = [85, 320, 555];
-const CAT_TOP = 780, CAT_W = 176;
+const BASE_CAT_TOP = 780, CAT_W = 176;
+let CAT_TOP = BASE_CAT_TOP;
 const GAME_TIME = 60;
 const MAX_LIFE = 3;
 const TEST_MODE = false;
@@ -156,7 +157,7 @@ function build(){
 /* ---------- scaling ---------- */
 function fit(){
   const extra = Math.min(MAX_EXTRA, Math.max(0, Math.floor((innerHeight*W/innerWidth - BASE_H)/4)*4));
-  if(extra!==EXTRA){ EXTRA=extra; H=BASE_H+extra; $('#game').style.setProperty('--extra', extra+'px'); BG.resize(extra); }
+  if(extra!==EXTRA){ EXTRA=extra; H=BASE_H+extra; CAT_TOP=BASE_CAT_TOP+extra; $('#game').style.setProperty('--extra', extra+'px'); BG.resize(extra); }
   const s = Math.min(innerWidth/W, innerHeight/H);
   $('#game').style.transform = `translate(-50%,-50%) scale(${s})`;
 }

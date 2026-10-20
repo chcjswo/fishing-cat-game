@@ -39,7 +39,7 @@ img{-webkit-user-drag:none;user-select:none}
 .pg .splash{position:absolute;bottom:170px;left:50%;width:0;height:0}
 
 /* ---------- cat ---------- */
-#cat{position:absolute;top:780px;left:0;width:176px;height:200px;transition:transform .07s steps(2);z-index:16;pointer-events:none}
+#cat{position:absolute;top:calc(780px + var(--extra));left:0;width:176px;height:200px;transition:transform .07s steps(2);z-index:16;pointer-events:none}
 #cat .body{position:absolute;inset:0;transform-origin:50% 100%}
 #cat .m{position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:none}
 #cat .m-idle,#cat .m-happy,#cat .m-burnt{width:170px;height:192.8px;object-fit:contain}
