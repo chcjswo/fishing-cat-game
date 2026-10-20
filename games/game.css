@@ -196,7 +196,7 @@ img{-webkit-user-drag:none;user-select:none}
 #titleBg{position:absolute;inset:0;width:640px;height:100%}
 #title .logo{position:absolute;left:0;right:0;top:calc(70px + var(--extra)/2);text-align:center;animation:logo 1.2s steps(2) infinite}
 @keyframes logo{50%{transform:translateY(-8px)}}
-#title .logo span{display:inline-block;font:bold 118px/1 'Galmuri11';letter-spacing:4px}
+#title .logo span{display:inline-block;font:bold 140px/1 'Galmuri11';letter-spacing:4px}
 #title .logo .l1{color:#8fd46a;text-shadow:6px 0 #3a2412,-6px 0 #3a2412,0 6px #3a2412,0 -6px #3a2412,6px 6px #3a2412,-6px -6px #3a2412,6px -6px #3a2412,-6px 6px #3a2412,0 14px #3a2412}
 #title .logo .l2{color:#ffab3a;text-shadow:6px 0 #3a2412,-6px 0 #3a2412,0 6px #3a2412,0 -6px #3a2412,6px 6px #3a2412,-6px -6px #3a2412,6px -6px #3a2412,-6px 6px #3a2412,0 14px #3a2412}
 #title .logo em{display:inline-block;margin-top:22px;font:bold 30px 'Galmuri11';font-style:normal;color:#fff;background:#2a8fb0;padding:8px 18px;box-shadow:0 0 0 4px #1a0f08}
