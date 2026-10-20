@@ -573,7 +573,14 @@ const HAPTIC = { fish:[10], hurt:[55], bomb:[70,40,90], fever:[20,40,20,40,60] }
 // FEVER 중에는 물고기가 비처럼 쏟아져 수집마다 울리면 진동이 끊이지 않으므로 간격을 둔다.
 const FISH_HAPTIC_GAP_MS = 250;
 let lastFishHaptic = -Infinity;
-function haptic(pattern){ notifyNative('haptic',{pattern}); }
+let hapticOn = localStorage.getItem('fc_haptic') !== 'off';
+function haptic(pattern){ if(hapticOn) notifyNative('haptic',{pattern}); }
+// 진동은 앱에서만 울리므로 설정의 진동 줄도 앱에서만 보인다.
+const hapticButton=$('#btnHaptic');
+function renderHaptic(){ hapticButton.textContent=hapticOn?'ON':'OFF'; hapticButton.setAttribute('aria-pressed', hapticOn); }
+$('#hapticRow').hidden=!window.NativeBridge;
+renderHaptic();
+hapticButton.addEventListener('click', ()=>{ hapticOn=!hapticOn; localStorage.setItem('fc_haptic', hapticOn?'on':'off'); renderHaptic(); haptic(HAPTIC.fish); });
 function fishHaptic(){
   const now=performance.now();
   if(now-lastFishHaptic<FISH_HAPTIC_GAP_MS) return;
