@@ -178,6 +178,8 @@ function volumeChannel(key){
   };
 }
 const MUSIC_VOLUME=volumeChannel('fc_music_volume'), SFX_VOLUME=volumeChannel('fc_sfx_volume');
+// 효과음 자체 음량 (0.5 ≈ -6dB). 슬라이더 볼륨과 별개로 모든 효과음에 곱해진다.
+const SFX_BASE_GAIN=.5;
 function tone(f, d=.1, type='square', vol=.08, slide=0, delay=0){
   if(!soundOn) return;
   try{
@@ -186,7 +188,7 @@ function tone(f, d=.1, type='square', vol=.08, slide=0, delay=0){
     const o = actx.createOscillator(), g = actx.createGain();
     o.type=type; o.frequency.setValueAtTime(f,t);
     if(slide) o.frequency.exponentialRampToValueAtTime(Math.max(40,f+slide), t+d);
-    g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.001,t+d);
+    g.gain.setValueAtTime(vol*SFX_BASE_GAIN,t); g.gain.exponentialRampToValueAtTime(.001,t+d);
     o.connect(g).connect(SFX_VOLUME.output()); o.start(t); o.stop(t+d+.02);
   }catch(e){}
 }
