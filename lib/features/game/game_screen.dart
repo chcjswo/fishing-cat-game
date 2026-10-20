@@ -56,6 +56,26 @@ class _GameScreenState extends State<GameScreen> {
     super.dispose();
   }
 
+  /// 화면 위 카메라 구멍·노치 높이(논리 픽셀 = WebView CSS px).
+  double _safeTop = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final safeTop = MediaQuery.paddingOf(context).top;
+    if (safeTop == _safeTop) return;
+    _safeTop = safeTop;
+    _sendSafeTop();
+  }
+
+  /// 배경은 카메라 구멍 아래까지 그리고 HUD만 그 높이만큼 내리도록 게임에 알린다.
+  Future<void> _sendSafeTop() async {
+    await _webView?.evaluateJavascript(
+      source:
+          'window.GameControl && GameControl.setSafeTop && GameControl.setSafeTop($_safeTop);',
+    );
+  }
+
   Rect? _screenRect() {
     final box = context.findRenderObject() as RenderBox?;
     return box == null ? null : box.localToGlobal(Offset.zero) & box.size;
@@ -110,8 +130,10 @@ class _GameScreenState extends State<GameScreen> {
       },
       child: Scaffold(
         backgroundColor: Colors.black,
-        // 노치·홈 인디케이터 영역은 검은 레터박스로 남겨 HUD가 가려지지 않게 한다.
+        // 위쪽은 게임 배경을 카메라 구멍 아래까지 채우고 HUD만 게임이 내린다.
+        // 홈 인디케이터 영역은 검은 여백으로 남겨 조작 버튼이 가려지지 않게 한다.
         body: SafeArea(
+          top: false,
           child: InAppWebView(
             initialUrlRequest: URLRequest(url: WebUri(gameUrl)),
             initialSettings: InAppWebViewSettings(
@@ -132,7 +154,10 @@ class _GameScreenState extends State<GameScreen> {
             },
             // 게임 페이지가 다 로드되면 스플래시를 걷어내 빈 화면 없이 타이틀로
             // 넘어간다. 로드 실패 시에도 스플래시에 갇히지 않도록 함께 걷어낸다.
-            onLoadStop: (_, _) => FlutterNativeSplash.remove(),
+            onLoadStop: (_, _) {
+              _sendSafeTop();
+              FlutterNativeSplash.remove();
+            },
             onReceivedError: (_, _, _) => FlutterNativeSplash.remove(),
           ),
         ),
