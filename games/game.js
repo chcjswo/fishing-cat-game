@@ -166,18 +166,21 @@ function audioCtx(){
   return actx;
 }
 // 음악·효과음 볼륨(0~100). iOS WebView는 audio.volume을 무시하므로 GainNode로 조절하고 저장한다.
-function volumeChannel(key){
+// baseGain은 슬라이더와 별개인 채널 자체 음량이다.
+function volumeChannel(key, baseGain=1){
   let volume=Number(localStorage.getItem(key) ?? 100), gain=null;
   return {
     get volume(){ return volume; },
     output(){
-      if(!gain){ const c=audioCtx(); gain=c.createGain(); gain.gain.value=volume/100; gain.connect(c.destination); }
+      if(!gain){ const c=audioCtx(); gain=c.createGain(); gain.gain.value=volume/100*baseGain; gain.connect(c.destination); }
       return gain;
     },
-    set(v){ volume=v; localStorage.setItem(key, v); if(gain) gain.gain.value=v/100; },
+    set(v){ volume=v; localStorage.setItem(key, v); if(gain) gain.gain.value=v/100*baseGain; },
   };
 }
-const MUSIC_VOLUME=volumeChannel('fc_music_volume'), SFX_VOLUME=volumeChannel('fc_sfx_volume');
+// 음악 자체 음량 (0.5 ≈ -6dB). mp3를 다시 인코딩하지 않고 음량만 낮춘다.
+const MUSIC_BASE_GAIN=.5;
+const MUSIC_VOLUME=volumeChannel('fc_music_volume', MUSIC_BASE_GAIN), SFX_VOLUME=volumeChannel('fc_sfx_volume');
 // 효과음 자체 음량 (0.125 ≈ -18dB). 슬라이더 볼륨과 별개로 모든 효과음에 곱해진다.
 const SFX_BASE_GAIN=.125;
 function tone(f, d=.1, type='square', vol=.08, slide=0, delay=0){
