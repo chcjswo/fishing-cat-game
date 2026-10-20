@@ -5,6 +5,8 @@ const W = 640, BASE_H = 1024;
 // 세로로 긴 기기에서는 게임 높이를 늘려 위아래 여백을 없앤다. 픽셀 격자(4px)에 맞추고 상한을 둔다.
 const MAX_EXTRA = 512;
 let H = BASE_H, EXTRA = 0;
+// 앱이 알려 주는 화면 위 카메라 구멍·노치 높이(CSS px). HUD를 그만큼 아래로 내린다.
+let SAFE_TOP = 0;
 const LANES = [85, 320, 555];
 const BASE_CAT_TOP = 780, CAT_W = 176;
 let CAT_TOP = BASE_CAT_TOP;
@@ -159,6 +161,7 @@ function fit(){
   const extra = Math.min(MAX_EXTRA, Math.max(0, Math.floor((innerHeight*W/innerWidth - BASE_H)/4)*4));
   if(extra!==EXTRA){ EXTRA=extra; H=BASE_H+extra; CAT_TOP=BASE_CAT_TOP+extra; $('#game').style.setProperty('--extra', extra+'px'); BG.resize(extra); PIX.drawTitle($('#titleBg'), extra); }
   const s = Math.min(innerWidth/W, innerHeight/H);
+  $('#game').style.setProperty('--safe-top', SAFE_TOP/s+'px');
   $('#game').style.transform = `translate(-50%,-50%) scale(${s})`;
 }
 addEventListener('resize', fit);
@@ -584,6 +587,7 @@ if(window.NativeBridge) window.GameControl = {
   pause(){ if(S.running && !S.paused){ S.frozen=false; togglePause(); } },
   // visibilitychange가 WebView에서 항상 오지는 않으므로 앱 생명주기로 음악을 멈추고 재개한다.
   muteMusic(){ suspendMusic(true); },
+  setSafeTop(px){ SAFE_TOP=px; fit(); },
   unmuteMusic(){ suspendMusic(false); },
 };
 
