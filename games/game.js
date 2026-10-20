@@ -330,7 +330,9 @@ function spawn(type, lane, opts={}){
   el.style.width=def.w+'px'; el.style.height=def.h+'px';
   el.innerHTML=`<div class="spin">${def.art()}</div>`;
   const jitter = opts.jitter ? (Math.random()-.5)*opts.jitter : 0;
-  const it={ type, def, lane, x:LANES[lane]-def.w/2+jitter, y:-def.h-20, vy:(opts.speed||STAGES[S.stage].speed)*(def.speedMul||1)*(0.92+Math.random()*.16), el, delay:0, done:false };
+  // 게임 높이가 늘어 낙하 거리가 길어진 만큼 빠르게 떨어뜨려 고양이에게 닿는 시간은 그대로 둔다.
+  const fallScale = CAT_TOP/BASE_CAT_TOP;
+  const it={ type, def, lane, x:LANES[lane]-def.w/2+jitter, y:-def.h-20, vy:(opts.speed||STAGES[S.stage].speed)*(def.speedMul||1)*fallScale*(0.92+Math.random()*.16), el, delay:0, done:false };
   if(def.warn && !opts.noWarn){
     it.delay=def.warn;
     const w=document.createElement('div'); w.className='warn'; w.textContent='!'; w.style.left=LANES[lane]+'px';
