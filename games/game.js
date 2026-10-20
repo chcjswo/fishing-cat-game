@@ -521,7 +521,7 @@ function endStage(timeUp, why){
   }, why==='lives'?700:300);
 }
 function newGame(){ S.stage=0; S.score=0; S.lives=MAX_LIFE; openIntro(); }
-function toTitle(){ S.running=false; clearItems(); endFever(); S.stage=0; applyTheme(null); $('#bestTitle').textContent = best?`BEST ${best.toLocaleString()}`:''; show('title'); }
+function toTitle(){ S.running=false; clearItems(); endFever(); S.stage=0; applyTheme(null); show('title'); }
 
 /* ---------- input ---------- */
 function bindPress(el, fn){
