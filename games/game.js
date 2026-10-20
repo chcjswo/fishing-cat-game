@@ -503,7 +503,7 @@ function endStage(timeUp, why){
   setTimeout(()=>{
     clearItems();
     const last=S.stage===STAGES.length-1;
-    $('#resTitle').textContent = clear ? (last?'ALL CLEAR!':'STAGE CLEAR') : (why==='lives'?'GAME OVER':'TIME UP');
+    $('#resTitle').textContent = clear ? (last?'모두 클리어!':'스테이지 클리어') : (why==='lives'?'게임 오버':'시간 종료');
     const stars = clear ? (gained>=st.target*1.8?3:gained>=st.target*1.35?2:1) : 0;
     $('#resStars').innerHTML=[0,1,2].map(i=>`<i class="${i<stars?'on':''}">${PIX.starIcon(i<stars)}</i>`).join('');
     const catImg = !clear ? 'cat_hurt' : stars>=3 ? 'cat_reach' : stars===2 ? 'cat_star2' : 'cat_star1';

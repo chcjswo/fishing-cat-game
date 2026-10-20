@@ -17,7 +17,7 @@ runBrowser(async () => {
   }
   check(p.S.lives === 0, `생명이 줄지 않았다: ${p.S.lives}`);
   await delay(900);
-  check(document.querySelector('#resTitle').textContent === 'GAME OVER', 'GAME OVER가 아니다');
+  check(document.querySelector('#resTitle').textContent === '게임 오버', '게임 오버가 아니다');
 
   // 목표 미달 시간 종료 → TIME UP, 다시 도전하면 같은 스테이지·생명 3
   p.newGame();
@@ -27,7 +27,7 @@ runBrowser(async () => {
   p.S.time = 0.01;
   p.step(0.05);
   await delay(400);
-  check(document.querySelector('#resTitle').textContent === 'TIME UP', '목표 미달인데 TIME UP이 아니다');
+  check(document.querySelector('#resTitle').textContent === '시간 종료', '목표 미달인데 시간 종료가 아니다');
   check(document.querySelector('#resStars .on') === null, 'TIME UP에 별이 있다');
   document.querySelector('#btnNext').click();
   check(p.S.stage === 0 && p.S.score === 0 && p.S.lives === 3, '다시 도전 상태가 틀렸다');
@@ -39,7 +39,7 @@ runBrowser(async () => {
   p.S.time = 0.01;
   p.step(0.05);
   await delay(400);
-  check(document.querySelector('#resTitle').textContent === 'STAGE CLEAR', '목표 달성인데 클리어가 아니다');
+  check(document.querySelector('#resTitle').textContent === '스테이지 클리어', '목표 달성인데 클리어가 아니다');
   check(document.querySelectorAll('#resStars .on').length === 3, '별 3개가 아니다');
   p.toTitle();
 });
