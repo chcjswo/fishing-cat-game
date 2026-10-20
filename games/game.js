@@ -157,7 +157,7 @@ function build(){
 /* ---------- scaling ---------- */
 function fit(){
   const extra = Math.min(MAX_EXTRA, Math.max(0, Math.floor((innerHeight*W/innerWidth - BASE_H)/4)*4));
-  if(extra!==EXTRA){ EXTRA=extra; H=BASE_H+extra; CAT_TOP=BASE_CAT_TOP+extra; $('#game').style.setProperty('--extra', extra+'px'); BG.resize(extra); }
+  if(extra!==EXTRA){ EXTRA=extra; H=BASE_H+extra; CAT_TOP=BASE_CAT_TOP+extra; $('#game').style.setProperty('--extra', extra+'px'); BG.resize(extra); PIX.drawTitle($('#titleBg'), extra); }
   const s = Math.min(innerWidth/W, innerHeight/H);
   $('#game').style.transform = `translate(-50%,-50%) scale(${s})`;
 }

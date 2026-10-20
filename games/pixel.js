@@ -123,12 +123,15 @@ class PixelBG {
 }
 
 /* title background: sky + sparkles + sea + rock */
-function drawTitle(canvas){
-  canvas.width=PW; canvas.height=PH; const ctx=canvas.getContext('2d');
+// extra: 게임 높이에 더해진 px. 하늘을 늘리고 반짝이는 절반, 바다·바위는 전부 아래로 내린다.
+function drawTitle(canvas, extra=0){
+  const e=extra/4;
+  canvas.width=PW; canvas.height=PH+e; const ctx=canvas.getContext('2d');
   const t={sky:['#a8e2f3','#bde9f5','#cfeff7','#dff5f9']};
-  sky(ctx,t,0,PH,0,'day');
+  sky(ctx,t,0,PH+e,0,'day');
   const sp=[[14,86],[140,96],[18,30],[146,12],[76,120],[6,150],[120,140]];
-  sp.forEach(([x,y],i)=>{ const s=i%2?2:3; R(ctx,'#ffffff',x-s,y,s*2+1,1); R(ctx,'#ffffff',x,y-s,1,s*2+1); R(ctx,'#ffffff',x-1,y-1,3,3); });
+  sp.forEach(([x,y],i)=>{ y+=Math.round(e/2); const s=i%2?2:3; R(ctx,'#ffffff',x-s,y,s*2+1,1); R(ctx,'#ffffff',x,y-s,1,s*2+1); R(ctx,'#ffffff',x-1,y-1,3,3); });
+  ctx.translate(0,e);
   // sea
   const sc=['#6ff0e6','#3edad4','#1fc0bf','#0fa3a8'];
   for(let i=0;i<4;i++){ const base=184+i*14, r=9+i;

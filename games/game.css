@@ -193,7 +193,7 @@ img{-webkit-user-drag:none;user-select:none}
 
 /* ---------- title ---------- */
 #title{overflow:hidden}
-#titleBg{position:absolute;inset:0;width:640px;height:1024px}
+#titleBg{position:absolute;inset:0;width:640px;height:100%}
 #title .logo{position:absolute;left:0;right:0;top:70px;text-align:center;animation:logo 1.2s steps(2) infinite}
 @keyframes logo{50%{transform:translateY(-8px)}}
 #title .logo span{display:inline-block;font:bold 118px/1 'Galmuri11';letter-spacing:4px}
