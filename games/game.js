@@ -178,8 +178,8 @@ function volumeChannel(key){
   };
 }
 const MUSIC_VOLUME=volumeChannel('fc_music_volume'), SFX_VOLUME=volumeChannel('fc_sfx_volume');
-// 효과음 자체 음량 (0.5 ≈ -6dB). 슬라이더 볼륨과 별개로 모든 효과음에 곱해진다.
-const SFX_BASE_GAIN=.5;
+// 효과음 자체 음량 (0.25 ≈ -12dB). 슬라이더 볼륨과 별개로 모든 효과음에 곱해진다.
+const SFX_BASE_GAIN=.25;
 function tone(f, d=.1, type='square', vol=.08, slide=0, delay=0){
   if(!soundOn) return;
   try{
