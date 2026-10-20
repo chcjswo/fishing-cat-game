@@ -4,7 +4,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
 img{-webkit-user-drag:none;user-select:none}
 .px{image-rendering:pixelated;image-rendering:crisp-edges}
 #viewport{position:fixed;inset:0}
-#game{position:absolute;left:50%;top:50%;width:640px;height:1024px;overflow:hidden;transform-origin:center center;background:#9fe3fb;box-shadow:0 0 0 4px #000,0 20px 80px rgba(0,0,0,.6)}
+#game{--extra:0px;position:absolute;left:50%;top:50%;width:640px;height:calc(1024px + var(--extra));overflow:hidden;transform-origin:center center;background:#9fe3fb;box-shadow:0 0 0 4px #000,0 20px 80px rgba(0,0,0,.6)}
 #world{position:absolute;inset:0}
 #world.shake{animation:shake .36s steps(6)}
 @keyframes shake{0%,100%{transform:none}20%{transform:translate(-12px,4px)}40%{transform:translate(8px,-8px)}60%{transform:translate(-8px,4px)}80%{transform:translate(4px,-4px)}}
