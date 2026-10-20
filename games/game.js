@@ -476,7 +476,7 @@ function applyTheme(background=STAGES[S.stage].background){ const st=STAGES[S.st
 
 function openIntro(){
   const st=STAGES[S.stage]; applyTheme();
-  $('#introTitle').textContent=st.name; $('#introSub').textContent=st.sub; $('#introGoal').textContent=st.target.toLocaleString();
+  $('#introTitle').textContent=`스테이지 ${S.stage+1}`; $('#introSub').textContent=st.sub; $('#introGoal').textContent=st.target.toLocaleString();
   const prev = STAGES.slice(0,S.stage).flatMap(st=>Object.keys(st.weights));
   $('#legend').innerHTML = Object.keys(st.weights).map(k=>{
     const d=ITEMS[k], isNew=S.stage>0 && !prev.includes(k);
