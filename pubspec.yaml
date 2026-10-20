@@ -47,8 +47,9 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/icons/icon.png"
-  # 아이콘 원본은 python tool/make_icon.py 로 생성한다.
-  adaptive_icon_background: "#96D7F0"
+  # icon.png는 직접 제작한 1024 풀블리드 원본이다.
+  # icon_foreground.png는 원본을 적응형 아이콘 안전 영역(108dp 중 72dp)에 맞춰 축소한 이미지.
+  adaptive_icon_background: "#5ECCE2"
   adaptive_icon_foreground: "assets/icons/icon_foreground.png"
   remove_alpha_ios: true
   min_sdk_android: 21
