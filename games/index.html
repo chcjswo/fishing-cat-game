@@ -6,7 +6,7 @@
 <title>낚시냥 — Fishing Cat</title>
 <link rel="preload" href="assets/fx_bomb.png" as="image">
 <link rel="stylesheet" href="fonts/galmuri.css">
-<link rel="stylesheet" href="game.css?v=37">
+<link rel="stylesheet" href="game.css?v=38">
 </head>
 <body>
 <div id="viewport">
@@ -105,17 +105,24 @@
   </section>
 
   <!-- RESULT -->
-  <section id="result" class="screen modal" data-screen-label="04 Result">
+  <section id="result" class="screen modal" data-screen-label="04 Result" role="dialog" aria-modal="true" aria-labelledby="resTitle">
    <div class="card pxbox">
     <div class="card-head" id="resTitle">스테이지 클리어</div>
     <div class="stars" id="resStars"></div>
     <img class="res-cat" id="resCat" src="assets/cat_happy.png" alt="">
+    <p class="result-stage" id="resLocation" hidden></p>
+    <p class="result-time" id="resTime" hidden></p>
     <dl class="res">
      <dt>스테이지 점수</dt><dd id="resStage">0</dd>
      <dt>총 점수</dt><dd id="resTotal">0</dd>
      <dt>최고 점수</dt><dd id="resBest">0</dd>
     </dl>
-    <div class="btns">
+    <div class="revive-area" id="reviveArea" hidden>
+     <button class="pxbtn red" id="btnRevive" disabled>▶ 광고 보고 이어하기</button>
+     <p id="reviveStatus" role="status">광고 준비 중</p>
+     <small>하트 3개 회복 · 스테이지당 1회</small>
+    </div>
+    <div class="btns result-actions">
      <button class="pxbtn brown" id="btnHome">처음으로</button>
      <button class="pxbtn red" id="btnNext">다음 스테이지</button>
     </div>
@@ -164,6 +171,6 @@
  </div>
 </div>
 <script src="pixel.js?v=29"></script>
-<script src="game.js?v=81"></script>
+<script src="game.js?v=82"></script>
 </body>
 </html>

@@ -503,6 +503,12 @@ function endStage(timeUp, why){
   if(S.score>best){ best=S.score; localStorage.setItem('fc_best',best); }
   setTimeout(()=>{
     clearItems();
+    const gameOver=why==='lives';
+    $('#result').classList.toggle('game-over',gameOver);
+    $('#resLocation').hidden=!gameOver; $('#resTime').hidden=!gameOver; $('#reviveArea').hidden=!gameOver;
+    $('#resLocation').textContent=`STAGE ${S.stage+1} · ${st.sub}`;
+    $('#resTime').textContent=`남은 시간 ${Math.ceil(Math.max(0,S.time))}초`;
+    $('#btnHome').textContent=gameOver?'메인 화면으로':'처음으로';
     const last=S.stage===STAGES.length-1;
     $('#resTitle').textContent = clear ? (last?'모두 클리어!':'스테이지 클리어') : (why==='lives'?'게임 오버':'시간 종료');
     const stars = clear ? (gained>=st.target*1.8?3:gained>=st.target*1.35?2:1) : 0;
@@ -515,10 +521,11 @@ function endStage(timeUp, why){
     const nb=$('#btnNext');
     if(clear && !last){ nb.textContent='다음 스테이지'; nb.onclick=()=>{S.stage++; openIntro();}; }
     else if(clear && last){ nb.textContent='다시 하기'; nb.onclick=()=>newGame(); }
-    else { nb.textContent='다시 도전'; nb.onclick=restartStage; }
-    $('#shareRow').hidden=!window.NativeBridge;
+    else { nb.textContent=gameOver?'현재 스테이지 처음부터 다시하기':'다시 도전'; nb.onclick=restartStage; }
+    $('#shareRow').hidden=!window.NativeBridge||gameOver;
     clear?SFX.clear():SFX.fail();
     show('result');
+    if(gameOver) nb.focus();
   }, why==='lives'?700:300);
 }
 function newGame(){ S.stage=0; S.score=0; S.lives=MAX_LIFE; openIntro(); }
