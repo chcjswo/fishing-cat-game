@@ -250,6 +250,7 @@ const S = {
   running:false, paused:false, stage:0, score:0, stageStart:0, stageScore:0,
   lives:MAX_LIFE, lane:1, time:GAME_TIME, spawnT:0, items:[], fever:0, feverOn:false, feverT:0,
   invuln:0, last:0, lastTick:0, frozen:false,
+  gameOver:false, reviveUsed:false,
 };
 let best = +localStorage.getItem('fc_best') || 0;
 
@@ -353,7 +354,10 @@ function inCatchZone(it){
   return bottom>=CAT_TOP+34 && cy<=CAT_TOP+150;
 }
 function checkCatchNow(){
-  for(const it of S.items) if(!it.done && !it.delay && it.lane===S.lane && inCatchZone(it)) collect(it);
+  for(const it of S.items){
+    if(!S.running) break;
+    if(!it.done && !it.delay && it.lane===S.lane && inCatchZone(it)) collect(it);
+  }
 }
 function popText(txt, x, y, cls=''){
   const p=document.createElement('div'); p.className='pop '+cls; p.textContent=txt; p.style.left=x+'px'; p.style.top=y+'px';
@@ -429,6 +433,7 @@ function startLoop(){
 }
 function step(dt){
   S.time-=dt; if(S.invuln>0) S.invuln-=dt;
+  if(S.invuln<=0) $('#cat').classList.remove('revive-protection');
   if(S.time<=10 && Math.ceil(S.time)!==S.lastTick && S.time>0){ S.lastTick=Math.ceil(S.time); SFX.tick(); }
   renderTime();
   if(S.time<=0){ endStage(true,'time'); return; }
@@ -462,7 +467,7 @@ function step(dt){
     if(it.delay>0){ it.delay-=dt; if(it.delay<=0){ it.warnEl&&it.warnEl.remove(); it.el.style.display=''; pull(it.lane);} continue; }
     it.y+=it.vy*dt;
     it.el.style.transform=`translate(${it.x}px,${it.y}px)`;
-    if(it.lane===S.lane && inCatchZone(it)) { collect(it); continue; }
+    if(it.lane===S.lane && inCatchZone(it)) { collect(it); if(!S.running) return; continue; }
     if(it.y>H+20){ it.done=true; it.el.remove(); }
   }
   S.items=S.items.filter(i=>!i.done);
@@ -474,7 +479,10 @@ function hideAll(){ document.querySelectorAll('.screen').forEach(s=>s.classList.
 function clearItems(){ S.items.forEach(i=>{i.el.remove(); i.warnEl&&i.warnEl.remove();}); S.items=[]; $('#fx').innerHTML=''; }
 function applyTheme(background=STAGES[S.stage].background){ const st=STAGES[S.stage], g=$('#game'); g.classList.remove('day','sunset','night'); g.classList.add(st.theme); BG&&BG.setTheme(st.theme,background,!!background&&st.backgroundPixelated); const next=STAGES[S.stage+1]; if(BG&&background&&next?.background) BG.loadBackground(next.background); }
 
+let resultTimer=null;
 function openIntro(){
+  clearTimeout(resultTimer); S.gameOver=false; S.reviveUsed=false;
+  S.invuln=0; $('#cat').classList.remove('revive-protection');
   const st=STAGES[S.stage]; applyTheme();
   $('#introTitle').textContent=`스테이지 ${S.stage+1}`; $('#introSub').textContent=st.sub; $('#introGoal').textContent=st.target.toLocaleString();
   const prev = STAGES.slice(0,S.stage).flatMap(st=>Object.keys(st.weights));
@@ -501,9 +509,10 @@ function endStage(timeUp, why){
   const st=STAGES[S.stage]; const gained=S.score-S.stageStart;
   const clear = why==='time' && (TEST_MODE || gained>=st.target);
   if(S.score>best){ best=S.score; localStorage.setItem('fc_best',best); }
-  setTimeout(()=>{
-    clearItems();
+  resultTimer=setTimeout(()=>{
     const gameOver=why==='lives';
+    S.gameOver=gameOver;
+    if(!gameOver) clearItems();
     $('#result').classList.toggle('game-over',gameOver);
     $('#resLocation').hidden=!gameOver; $('#resTime').hidden=!gameOver; $('#reviveArea').hidden=!gameOver;
     $('#resLocation').textContent=`STAGE ${S.stage+1} · ${st.sub}`;
@@ -529,12 +538,24 @@ function endStage(timeUp, why){
   }, why==='lives'?700:300);
 }
 function newGame(){ S.stage=0; S.score=0; S.lives=MAX_LIFE; openIntro(); }
+function reviveFromGameOver(){
+  if(!S.gameOver || S.reviveUsed || S.time<=0) return false;
+  S.gameOver=false; S.reviveUsed=true; S.lives=MAX_LIFE; S.invuln=3;
+  S.items=S.items.filter(it=>{
+    if(it.done || it.def.dmg || it.def.cls==='trash'){ it.el.remove(); it.warnEl&&it.warnEl.remove(); return false; }
+    return true;
+  });
+  $('#fx').innerHTML=''; $('#blastFx').innerHTML=''; $('#world').classList.remove('shake');
+  $('#cat').classList.remove('blink'); $('#cat').classList.add('revive-protection'); setFace('idle');
+  S.spawnT=Math.max(.6,S.spawnT); renderHearts(); renderScore(); renderTime(); renderFever();
+  S.running=true; pauseGame(); startLoop(); resumeGame(); return true;
+}
 function restartStage(){
   cancelResume();
   S.running=false; S.paused=false; S.frozen=false;
   clearItems(); endFever(); S.score=S.stageStart; S.lives=MAX_LIFE; openIntro();
 }
-function toTitle(){ cancelResume(); S.running=false; S.paused=false; S.frozen=false; clearItems(); endFever(); S.stage=0; applyTheme(null); show('title'); }
+function toTitle(){ clearTimeout(resultTimer); cancelResume(); S.gameOver=false; S.running=false; S.paused=false; S.frozen=false; $('#cat').classList.remove('revive-protection'); clearItems(); endFever(); S.stage=0; applyTheme(null); show('title'); }
 
 /* ---------- input ---------- */
 function bindPress(el, fn){

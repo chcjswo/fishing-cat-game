@@ -12,7 +12,7 @@ const { spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..', '..', 'games');
 const PROBE =
-  'window.probe={S,STAGES,ITEMS,pickType,pickFeverFish,spawn,collect,step,startFever,endFever,openIntro,beginStage,endStage,newGame,toTitle,togglePause,clearItems,hideAll,applyTheme,getBG:()=>BG};\n';
+  'window.probe={S,STAGES,ITEMS,pickType,pickFeverFish,spawn,collect,step,startFever,endFever,openIntro,beginStage,endStage,newGame,toTitle,togglePause,clearItems,hideAll,applyTheme,reviveFromGameOver,getBG:()=>BG};\n';
 const NATIVE_BRIDGE =
   'window.bridgeEvents=[];window.NativeBridge={send:(type,payload)=>bridgeEvents.push([type,payload||{}])};';
 

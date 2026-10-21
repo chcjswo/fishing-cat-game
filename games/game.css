@@ -237,6 +237,7 @@ img{-webkit-user-drag:none;user-select:none}
 #result.game-over #btnNext{order:0;background:#2a8fb0}
 #result.game-over #btnHome{order:1}
 #result.game-over button:focus-visible{outline:4px solid #2a8fb0;outline-offset:10px}
+#cat.revive-protection{animation:blink .15s steps(1) infinite}
 
 /* ---------- title ---------- */
 #title{overflow:hidden}
