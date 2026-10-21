@@ -110,6 +110,8 @@ class _GameScreenState extends State<GameScreen> {
         final exiting = await _confirmExit();
         if (!exiting) await _callGameControl('resume');
       case BackAction.confirmExit:
+        // 일시정지 화면에서 재개 카운트다운 중일 수도 있으므로 먼저 취소한다.
+        await _callGameControl('pause');
         await _confirmExit();
     }
   }
