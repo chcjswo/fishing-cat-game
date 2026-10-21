@@ -482,6 +482,7 @@ function applyTheme(background=STAGES[S.stage].background){ const st=STAGES[S.st
 let resultTimer=null;
 function openIntro(){
   clearTimeout(resultTimer); S.gameOver=false; S.reviveUsed=false;
+  pendingReviveAd=null; reviveAdMessage='';
   S.invuln=0; $('#cat').classList.remove('revive-protection');
   const st=STAGES[S.stage]; applyTheme();
   $('#introTitle').textContent=`스테이지 ${S.stage+1}`; $('#introSub').textContent=st.sub; $('#introGoal').textContent=st.target.toLocaleString();
@@ -532,13 +533,14 @@ function endStage(timeUp, why){
     else if(clear && last){ nb.textContent='다시 하기'; nb.onclick=()=>newGame(); }
     else { nb.textContent=gameOver?'현재 스테이지 처음부터 다시하기':'다시 도전'; nb.onclick=restartStage; }
     $('#shareRow').hidden=!window.NativeBridge||gameOver;
+    renderReviveAd();
     clear?SFX.clear():SFX.fail();
     show('result');
-    if(gameOver) nb.focus();
+    if(gameOver) ($('#btnRevive').disabled||$('#btnRevive').hidden?nb:$('#btnRevive')).focus();
   }, why==='lives'?700:300);
 }
 function newGame(){ S.stage=0; S.score=0; S.lives=MAX_LIFE; openIntro(); }
-function reviveFromGameOver(){
+function reviveFromGameOver(startCountdown=true){
   if(!S.gameOver || S.reviveUsed || S.time<=0) return false;
   S.gameOver=false; S.reviveUsed=true; S.lives=MAX_LIFE; S.invuln=3;
   S.items=S.items.filter(it=>{
@@ -548,14 +550,41 @@ function reviveFromGameOver(){
   $('#fx').innerHTML=''; $('#blastFx').innerHTML=''; $('#world').classList.remove('shake');
   $('#cat').classList.remove('blink'); $('#cat').classList.add('revive-protection'); setFace('idle');
   S.spawnT=Math.max(.6,S.spawnT); renderHearts(); renderScore(); renderTime(); renderFever();
-  S.running=true; pauseGame(); startLoop(); resumeGame(); return true;
+  S.running=true; pauseGame(); startLoop(); if(startCountdown) resumeGame(); return true;
 }
 function restartStage(){
   cancelResume();
   S.running=false; S.paused=false; S.frozen=false;
   clearItems(); endFever(); S.score=S.stageStart; S.lives=MAX_LIFE; openIntro();
 }
-function toTitle(){ clearTimeout(resultTimer); cancelResume(); S.gameOver=false; S.running=false; S.paused=false; S.frozen=false; $('#cat').classList.remove('revive-protection'); clearItems(); endFever(); S.stage=0; applyTheme(null); show('title'); }
+function toTitle(){ clearTimeout(resultTimer); cancelResume(); pendingReviveAd=null; S.gameOver=false; S.running=false; S.paused=false; S.frozen=false; $('#cat').classList.remove('revive-protection'); clearItems(); endFever(); S.stage=0; applyTheme(null); show('title'); }
+
+/* ---------- rewarded revive (SDK 연결 전에는 비활성) ---------- */
+let reviveAdAvailable=false, reviveAdRequestId=0, pendingReviveAd=null, reviveAdMessage='', reviveAdInterrupted=false;
+function renderReviveAd(){
+  const button=$('#btnRevive'), pending=pendingReviveAd!==null;
+  button.hidden=S.reviveUsed;
+  button.disabled=!S.gameOver || S.reviveUsed || S.time<=0 || !window.NativeBridge || !reviveAdAvailable || pending;
+  button.textContent=pending?'광고 확인 중…':'▶ 광고 보고 이어하기';
+  $('#btnNext').disabled=pending; $('#btnHome').disabled=pending;
+  $('#reviveStatus').textContent=S.reviveUsed?'이번 스테이지의 이어하기를 사용했어요':
+    pending?'광고를 마치면 하트 3개로 이어갑니다.':
+    S.time<=0?'시간이 끝나 이어할 수 없어요.':
+    reviveAdMessage || (reviveAdAvailable?'남은 시간과 점수가 그대로 유지돼요.':'광고 준비 중');
+}
+function requestReviveAd(){
+  if($('#btnRevive').disabled || !S.gameOver || S.reviveUsed || pendingReviveAd!==null) return;
+  pendingReviveAd=++reviveAdRequestId; reviveAdMessage=''; reviveAdInterrupted=false; renderReviveAd();
+  notifyNative('reviveAd',{requestId:pendingReviveAd,stage:S.stage+1});
+}
+function completeReviveAd(requestId, rewarded){
+  if(pendingReviveAd===null || requestId!==pendingReviveAd || !S.gameOver) return false;
+  pendingReviveAd=null;
+  if(rewarded===true && reviveFromGameOver(!reviveAdInterrupted)) return true;
+  reviveAdMessage='광고를 완료하지 못했어요. 다시 시도할 수 있어요.'; renderReviveAd();
+  ($('#btnRevive').disabled?$('#btnNext'):$('#btnRevive')).focus(); return false;
+}
+$('#btnRevive').addEventListener('click', requestReviveAd);
 
 /* ---------- input ---------- */
 function bindPress(el, fn){
@@ -658,7 +687,11 @@ function toggleSound(){ soundOn=!soundOn; localStorage.setItem('fc_sound',soundO
 renderSound();
 sb.addEventListener('click', toggleSound);
 $('#btnPauseSound').addEventListener('click', toggleSound);
-document.addEventListener('visibilitychange', ()=>{ suspendMusic(document.hidden); if(document.hidden && S.running && (!S.paused || resumeTimer!==null)) pauseGame(); });
+document.addEventListener('visibilitychange', ()=>{
+  suspendMusic(document.hidden);
+  if(document.hidden && pendingReviveAd!==null) reviveAdInterrupted=true;
+  if(document.hidden && S.running && (!S.paused || resumeTimer!==null)) pauseGame();
+});
 
 /* ---------- native app ---------- */
 // 앱(WebView)에서만 window.NativeBridge가 주입된다. 브라우저에서는 이벤트를
@@ -689,11 +722,17 @@ function fishHaptic(){
   lastFishHaptic=now; haptic(HAPTIC.fish);
 }
 if(window.NativeBridge) window.GameControl = {
+  // 광고 SDK를 연결하는 쪽에서 준비 여부와 보상 지급 결과를 전달한다.
+  setReviveAdAvailable(available){ reviveAdAvailable=available===true; renderReviveAd(); },
+  completeReviveAd,
   // 앱 종료 확인 창이 떠 있는 동안 일시정지 화면 없이 진행만 멈춘다.
   freeze(){ if(S.running && !S.paused) S.frozen=true; },
   resume(){ S.frozen=false; S.last=performance.now(); },
   // 앱이 백그라운드로 갈 때 플레이 중이면 일시정지 화면으로 전환한다.
-  pause(){ if(S.running && (!S.paused || resumeTimer!==null)) pauseGame(); },
+  pause(){
+    if(pendingReviveAd!==null) reviveAdInterrupted=true;
+    if(S.running && (!S.paused || resumeTimer!==null)) pauseGame();
+  },
   // visibilitychange가 WebView에서 항상 오지는 않으므로 앱 생명주기로 음악을 멈추고 재개한다.
   muteMusic(){ suspendMusic(true); },
   setSafeTop(px){ SAFE_TOP=px; fit(); },
