@@ -558,21 +558,26 @@ function renderPause(){
   progress.setAttribute('aria-valuenow',Math.min(gained,st.target));
   progress.firstElementChild.style.width=`${Math.min(100,gained/st.target*100)}%`;
 }
-function openPauseConfirm(){
+let pauseAction=null;
+function openPauseConfirm(action){
+  pauseAction=action;
   $('#pauseMenu').hidden=true; $('#pauseConfirm').hidden=false;
-  $('#pauseConfirmTitle').textContent='이번 스테이지를 다시 시작할까요?';
-  $('#pauseConfirmCopy').textContent='이번 스테이지의 점수는 초기화됩니다.\n이전 스테이지까지의 총점은 유지되고,\n생명은 3개로 복구됩니다.';
+  const restart=action==='restart';
+  $('#pauseConfirmTitle').textContent=restart?'이번 스테이지를 다시 시작할까요?':'타이틀로 돌아갈까요?';
+  $('#pauseConfirmCopy').textContent=restart?'이번 스테이지의 점수는 초기화됩니다.\n이전 스테이지까지의 총점은 유지되고,\n생명은 3개로 복구됩니다.':'진행 중인 게임이 종료됩니다.\n다음 게임은 1스테이지부터 시작합니다.';
+  $('#btnPauseConfirm').textContent=restart?'다시 시작':'타이틀로 가기';
   $('#btnPauseCancel').focus();
 }
 function closePauseConfirm(){
-  $('#pauseMenu').hidden=false; $('#pauseConfirm').hidden=true; $('#btnRestart').focus();
+  $('#pauseMenu').hidden=false; $('#pauseConfirm').hidden=true;
+  $(pauseAction==='restart'?'#btnRestart':'#btnQuit').focus(); pauseAction=null;
 }
 $('#btnPause').addEventListener('click', togglePause);
 $('#btnResume').addEventListener('click', togglePause);
-$('#btnRestart').addEventListener('click', openPauseConfirm);
+$('#btnRestart').addEventListener('click', ()=>openPauseConfirm('restart'));
 $('#btnPauseCancel').addEventListener('click', closePauseConfirm);
-$('#btnPauseConfirm').addEventListener('click', restartStage);
-$('#btnQuit').addEventListener('click', toTitle);
+$('#btnPauseConfirm').addEventListener('click', ()=>{ const action=pauseAction; pauseAction=null; action==='restart'?restartStage():toTitle(); });
+$('#btnQuit').addEventListener('click', ()=>openPauseConfirm('title'));
 $('#btnHome').addEventListener('click', toTitle);
 $('#btnStart').addEventListener('click', ()=>{ tone(1,.01,'sine',.001); newGame(); });
 $('#btnGo').addEventListener('click', beginStage);

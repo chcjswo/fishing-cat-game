@@ -28,6 +28,11 @@ runBrowser(async () => {
   check(q('intro').classList.contains('show') && !p.S.running, '재시작 후 스테이지 안내가 아님');
   check(p.S.stage===3 && p.S.score===12000 && p.S.stageStart===12000, '재시작 시 이전 스테이지 총점 손실');
   check(p.S.lives===3 && p.S.time===60 && !p.S.feverOn && p.S.fever===0 && p.S.items.length===0, '재시작 상태 초기화 오류');
-  p.toTitle();
+  await p.beginStage(); q('btnPause').click(); q('btnQuit').click();
+  check(!q('pauseConfirm').hidden && p.S.running, '타이틀 이동 전 확인이 없음');
+  q('btnPauseCancel').click();
+  check(p.S.paused && document.activeElement===q('btnQuit'), '타이틀 이동 취소 시 일시정지 유지 오류');
+  q('btnQuit').click(); q('btnPauseConfirm').click();
+  check(!p.S.running && q('title').classList.contains('show'), '확인 후 타이틀 이동 실패');
 });
 console.log('PASS: 일시정지 팝업의 스테이지 정보와 시간 정지');
