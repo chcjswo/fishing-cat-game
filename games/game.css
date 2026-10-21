@@ -231,7 +231,7 @@ img{-webkit-user-drag:none;user-select:none}
 .revive-area .pxbtn{width:100%;min-height:76px;font-size:28px}
 .revive-area .pxbtn:disabled{cursor:default;filter:saturate(.45)}
 .revive-area p{font:19px/1.5 'Galmuri11';color:#8a5a2a;margin-top:16px}
-.revive-area small{display:block;font:17px/1.5 'Galmuri11';color:#8a7a60;margin-top:4px}
+.revive-area small{display:block;font:17px/1.5 'Galmuri11';color:#8a7a60;margin-top:20px}
 #result.game-over .result-actions{flex-direction:column;gap:22px}
 #result.game-over .result-actions .pxbtn{width:100%;min-height:64px;font-size:23px;white-space:normal;line-height:1.4;padding:10px 16px 12px}
 #result.game-over #btnNext{order:0;background:#2a8fb0}
