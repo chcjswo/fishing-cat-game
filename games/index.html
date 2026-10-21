@@ -125,7 +125,7 @@
 
   <!-- PAUSE -->
   <section id="pause" class="screen modal" data-screen-label="05 Pause" role="dialog" aria-modal="true" aria-labelledby="pauseHeading">
-   <div class="card pxbox pause-card">
+   <div class="card pxbox pause-card" id="pauseCard">
     <h2 class="card-head" id="pauseHeading">잠깐 쉬는 중</h2>
     <div id="pauseMenu">
     <img class="pause-cat" src="assets/cat_idle.png" alt="">
@@ -153,6 +153,12 @@
       <button class="pxbtn brown" id="btnPauseConfirm">다시 시작</button>
      </div>
     </div>
+   </div>
+   <div class="pxbox resume-countdown" id="resumeCountdown" hidden role="status" aria-live="polite">
+    <p id="resumeHeading">곧 다시 시작해요!</p>
+    <b id="resumeCount">3</b>
+    <span>잠시 멈추려면 일시정지 버튼을 누르세요</span>
+    <button class="pxbtn brown" id="btnResumeCancel">일시정지</button>
    </div>
   </section>
  </div>

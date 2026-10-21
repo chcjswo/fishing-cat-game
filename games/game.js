@@ -496,6 +496,7 @@ async function beginStage(){
 }
 function endStage(timeUp, why){
   if(!S.running) return;
+  cancelResume();
   S.running=false; endFever();
   const st=STAGES[S.stage]; const gained=S.score-S.stageStart;
   const clear = why==='time' && (TEST_MODE || gained>=st.target);
@@ -522,10 +523,11 @@ function endStage(timeUp, why){
 }
 function newGame(){ S.stage=0; S.score=0; S.lives=MAX_LIFE; openIntro(); }
 function restartStage(){
+  cancelResume();
   S.running=false; S.paused=false; S.frozen=false;
   clearItems(); endFever(); S.score=S.stageStart; S.lives=MAX_LIFE; openIntro();
 }
-function toTitle(){ S.running=false; clearItems(); endFever(); S.stage=0; applyTheme(null); show('title'); }
+function toTitle(){ cancelResume(); S.running=false; S.paused=false; S.frozen=false; clearItems(); endFever(); S.stage=0; applyTheme(null); show('title'); }
 
 /* ---------- input ---------- */
 function bindPress(el, fn){
@@ -541,10 +543,32 @@ addEventListener('keydown', e=>{
 });
 function togglePause(){
   if(!S.running) return;
+  if(resumeTimer!==null){ pauseGame(); return; }
   if(S.paused && !$('#pauseConfirm').hidden){ closePauseConfirm(); return; }
-  S.paused=!S.paused;
-  if(S.paused){ renderPause(); show('pause'); $('#btnResume').focus(); }
-  else hideAll();
+  S.paused?resumeGame():pauseGame();
+}
+let resumeTimer=null;
+function cancelResume(){
+  clearInterval(resumeTimer); resumeTimer=null;
+  $('#pauseCard').hidden=false; $('#resumeCountdown').hidden=true;
+  $('#pause').setAttribute('aria-labelledby','pauseHeading');
+}
+function pauseGame(){
+  cancelResume(); S.paused=true; S.frozen=false;
+  renderPause(); show('pause'); $('#btnResume').focus();
+}
+function resumeGame(){
+  if(resumeTimer!==null || document.hidden || musicSuspended) return;
+  let count=3;
+  $('#pauseCard').hidden=true; $('#resumeCountdown').hidden=false;
+  $('#pause').setAttribute('aria-labelledby','resumeHeading');
+  $('#resumeCount').textContent=count; $('#btnResumeCancel').focus();
+  resumeTimer=setInterval(()=>{
+    if(document.hidden || musicSuspended){ pauseGame(); return; }
+    count--;
+    if(count>0){ $('#resumeCount').textContent=count; return; }
+    cancelResume(); S.paused=false; S.last=performance.now(); hideAll(); $('#btnPause').focus();
+  },1000);
 }
 function renderPause(){
   $('#pauseMenu').hidden=false; $('#pauseConfirm').hidden=true;
@@ -574,6 +598,7 @@ function closePauseConfirm(){
 }
 $('#btnPause').addEventListener('click', togglePause);
 $('#btnResume').addEventListener('click', togglePause);
+$('#btnResumeCancel').addEventListener('click', pauseGame);
 $('#btnRestart').addEventListener('click', ()=>openPauseConfirm('restart'));
 $('#btnPauseCancel').addEventListener('click', closePauseConfirm);
 $('#btnPauseConfirm').addEventListener('click', ()=>{ const action=pauseAction; pauseAction=null; action==='restart'?restartStage():toTitle(); });
@@ -605,7 +630,7 @@ function toggleSound(){ soundOn=!soundOn; localStorage.setItem('fc_sound',soundO
 renderSound();
 sb.addEventListener('click', toggleSound);
 $('#btnPauseSound').addEventListener('click', toggleSound);
-document.addEventListener('visibilitychange', ()=>{ suspendMusic(document.hidden); if(document.hidden && S.running && !S.paused) togglePause(); });
+document.addEventListener('visibilitychange', ()=>{ suspendMusic(document.hidden); if(document.hidden && S.running && (!S.paused || resumeTimer!==null)) pauseGame(); });
 
 /* ---------- native app ---------- */
 // 앱(WebView)에서만 window.NativeBridge가 주입된다. 브라우저에서는 이벤트를
@@ -640,7 +665,7 @@ if(window.NativeBridge) window.GameControl = {
   freeze(){ if(S.running && !S.paused) S.frozen=true; },
   resume(){ S.frozen=false; S.last=performance.now(); },
   // 앱이 백그라운드로 갈 때 플레이 중이면 일시정지 화면으로 전환한다.
-  pause(){ if(S.running && !S.paused){ S.frozen=false; togglePause(); } },
+  pause(){ if(S.running && (!S.paused || resumeTimer!==null)) pauseGame(); },
   // visibilitychange가 WebView에서 항상 오지는 않으므로 앱 생명주기로 음악을 멈추고 재개한다.
   muteMusic(){ suspendMusic(true); },
   setSafeTop(px){ SAFE_TOP=px; fit(); },

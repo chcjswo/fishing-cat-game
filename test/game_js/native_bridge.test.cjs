@@ -20,6 +20,8 @@ runBrowser(async () => {
   p.togglePause();
   check(screens().at(-1) === 'pause', 'pause 이벤트 없음');
   p.togglePause();
+  check(p.S.paused, '카운트다운 중 게임이 재개됐다');
+  await delay(3100);
   check(screens().at(-1) === 'play', '계속하기 후 play 이벤트 없음');
 
   // freeze: 화면 전환 없이 진행만 멈춘다

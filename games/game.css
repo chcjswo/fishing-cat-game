@@ -188,6 +188,9 @@ img{-webkit-user-drag:none;user-select:none}
 .pause-toggle b{display:inline-block;margin-left:10px;color:#237d66}
 .pause-toggle[aria-pressed="false"] b{color:#8a7a60}
 .pause-toggle[hidden]{display:none}
+.resume-countdown{width:500px;padding:30px;text-align:center;color:#3a2412;font:26px/1.6 'Galmuri11'}
+.resume-countdown b{display:block;font:bold 110px/1.4 'Galmuri11';color:#e8581c;text-shadow:4px 4px #f0d99a}
+.resume-countdown span{display:block;font-size:17px;color:#8a5a2a;margin-bottom:24px}
 
 .intro-sub{text-align:center;font:bold 30px 'Galmuri11';color:#8a5a2a}
 .intro-goal{text-align:center;font:20px 'Galmuri11';color:#333;margin:14px 0 24px}
