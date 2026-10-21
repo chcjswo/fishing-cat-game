@@ -19,7 +19,8 @@ for(const [width,height] of [[320,568],[390,844],[640,1024]]){
       check(r.left>=card.left && r.right<=card.right+1 && r.bottom<=card.bottom+1, '카드 밖 요소: '+element.id);
       check(element.scrollWidth<=element.clientWidth, '텍스트 가로 넘침: '+element.id);
     };
-    for(const id of ['resLocation','resTime','resStage','resTotal','resBest','btnRevive','reviveStatus','btnNext','btnHome']) fits(q(id));
+    for(const id of ['resCat','resLocation','resTime','resStage','resTotal','resBest','btnRevive','btnNext','btnHome']) fits(q(id));
+    check(q('resCat').getBoundingClientRect().top>q('resTitle').getBoundingClientRect().bottom+5, '고양이 머리 위 별과 제목 사이 여백 부족');
     const next=q('btnNext').getBoundingClientRect(), home=q('btnHome').getBoundingClientRect();
     check(next.bottom<home.top && q('btnRevive').getBoundingClientRect().bottom<next.top, '버튼 겹침 또는 순서 오류');
     GameControl.setReviveAdAvailable(true); fits(q('btnRevive')); fits(q('reviveStatus'));

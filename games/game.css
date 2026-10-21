@@ -218,7 +218,7 @@ img{-webkit-user-drag:none;user-select:none}
 .card dl.res dd{font-size:28px;color:#e3591b}
 
 /* ---------- game over ---------- */
-#result.game-over .card{width:540px;padding:54px 38px 30px;text-align:center}
+#result.game-over .card{width:540px;padding:86px 38px 30px;text-align:center}
 #result.game-over .card-head{font-size:38px}
 #result.game-over .stars{display:none}
 #result.game-over .res-cat{width:108px;height:112px;object-fit:contain;margin:0 auto 12px}

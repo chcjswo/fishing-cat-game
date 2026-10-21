@@ -11,7 +11,7 @@ runBrowser(async()=>{
   check(q('resStage').textContent.includes((5200).toLocaleString()), '스테이지 점수 오류');
   check(q('resTotal').textContent===(23200).toLocaleString(), '총점 오류');
   check(getComputedStyle(q('resStars')).display==='none', '게임오버에 별점 표시');
-  check(!q('reviveArea').hidden && q('btnRevive').disabled && q('reviveStatus').textContent==='광고 준비 중', 'SDK 미연동 안내 오류');
+  check(!q('reviveArea').hidden && q('btnRevive').disabled && q('reviveStatus').hidden && q('reviveStatus').textContent==='', '광고 미준비 문구가 숨겨지지 않음');
   q('btnNext').click();
   check(p.S.stage===6 && p.S.score===18000 && p.S.lives===3 && p.S.time===60, '현재 스테이지 재시작 오류');
   check(q('intro').classList.contains('show'), '재시작 스테이지 안내 없음');

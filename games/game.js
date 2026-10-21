@@ -567,10 +567,12 @@ function renderReviveAd(){
   button.disabled=!S.gameOver || S.reviveUsed || S.time<=0 || !window.NativeBridge || !reviveAdAvailable || pending;
   button.textContent=pending?'광고 확인 중…':'▶ 광고 보고 이어하기';
   $('#btnNext').disabled=pending; $('#btnHome').disabled=pending;
-  $('#reviveStatus').textContent=S.reviveUsed?'이번 스테이지의 이어하기를 사용했어요':
+  const status=$('#reviveStatus');
+  status.textContent=S.reviveUsed?'이번 스테이지의 이어하기를 사용했어요':
     pending?'광고를 마치면 하트 3개로 이어갑니다.':
     S.time<=0?'시간이 끝나 이어할 수 없어요.':
-    reviveAdMessage || (reviveAdAvailable?'남은 시간과 점수가 그대로 유지돼요.':'광고 준비 중');
+    reviveAdMessage || (reviveAdAvailable?'남은 시간과 점수가 그대로 유지돼요.':'');
+  status.hidden=!status.textContent;
 }
 function requestReviveAd(){
   if($('#btnRevive').disabled || !S.gameOver || S.reviveUsed || pendingReviveAd!==null) return;
