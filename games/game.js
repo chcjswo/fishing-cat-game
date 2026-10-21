@@ -136,8 +136,8 @@ const ITEMS = {
   golden: { cls:'fish', w:116, h:72, pts:500, art:()=>img('golden'), label:'황금물고기', desc:'+500' },
   urchin: { cls:'urchin', w:86, h:86, pts:0, dmg:1, art:()=>img('urchin'), label:'성게', desc:'생명 -1', warn:.55, speedMul:1.1, hitText:'따끔!', hitColor:'#c783b5' },
   lionfish:{ cls:'lionfish', w:112, h:102, pts:0, dmg:1, art:()=>img('lionfish'), label:'쏠배감펭', desc:'생명 -1', warn:.7, speedMul:1.15, hitText:'독가시!', hitColor:'#ef9864' },
-  can:    { cls:'trash', w:54,  h:82, pts:-100, art:()=>img('can'), label:'빈 캔', desc:'-100' },
-  boot:   { cls:'trash', w:80,  h:82, pts:-100, art:()=>img('boot'), label:'헌 장화', desc:'-100' },
+  can:    { cls:'trash', w:54,  h:82, pts:-100, dmg:1, art:()=>img('can'), label:'빈 캔', desc:'-100 · 생명 -1' },
+  boot:   { cls:'trash', w:80,  h:82, pts:-100, dmg:1, art:()=>img('boot'), label:'헌 장화', desc:'-100 · 생명 -1' },
   bomb:   { cls:'bomb',  w:72,  h:100, pts:0, dmg:1, art:()=>img('bomb'), label:'폭탄', desc:'생명 -1' },
   shark:  { cls:'shark', w:132, h:217, pts:0, dmg:1, art:()=>img('shark'), label:'상어', desc:'생명 -1', warn:.7, speedMul:1.25 },
   heart:  { cls:'heart', w:78,  h:72, pts:0, art:()=>PIX.heartItem(), label:'생명 하트', desc:'생명 +1' },
@@ -380,7 +380,9 @@ function collect(it){
     if(!S.feverOn){ S.fever++; if(S.fever>=FEVER_NEED) startFever(); }
     renderFever();
   } else if(d.cls==='trash'){
-    addScore(d.pts); popText(d.pts, cx, cy-30, 'neg'); setFace('yuck',600); SFX.yuck();
+    addScore(d.pts); popText(d.pts, cx, cy-30, 'neg');
+    if(S.invuln<=0) hurt(it);
+    else { setFace('yuck',600); SFX.yuck(); }
   } else if(d.cls==='heart'){
     if(S.lives<MAX_LIFE){ S.lives++; renderHearts({idx:S.lives-1,type:'gain'}); popText('생명 +1', cx, cy-30, 'heal'); }
     else { addScore(300); popText('+300', cx, cy-30, 'heal'); }
