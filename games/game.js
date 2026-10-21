@@ -514,13 +514,17 @@ function endStage(timeUp, why){
     const nb=$('#btnNext');
     if(clear && !last){ nb.textContent='다음 스테이지'; nb.onclick=()=>{S.stage++; openIntro();}; }
     else if(clear && last){ nb.textContent='다시 하기'; nb.onclick=()=>newGame(); }
-    else { nb.textContent='다시 도전'; nb.onclick=()=>{ S.score=S.stageStart; S.lives=MAX_LIFE; openIntro(); }; }
+    else { nb.textContent='다시 도전'; nb.onclick=restartStage; }
     $('#shareRow').hidden=!window.NativeBridge;
     clear?SFX.clear():SFX.fail();
     show('result');
   }, why==='lives'?700:300);
 }
 function newGame(){ S.stage=0; S.score=0; S.lives=MAX_LIFE; openIntro(); }
+function restartStage(){
+  S.running=false; S.paused=false; S.frozen=false;
+  clearItems(); endFever(); S.score=S.stageStart; S.lives=MAX_LIFE; openIntro();
+}
 function toTitle(){ S.running=false; clearItems(); endFever(); S.stage=0; applyTheme(null); show('title'); }
 
 /* ---------- input ---------- */
@@ -537,11 +541,13 @@ addEventListener('keydown', e=>{
 });
 function togglePause(){
   if(!S.running) return;
+  if(S.paused && !$('#pauseConfirm').hidden){ closePauseConfirm(); return; }
   S.paused=!S.paused;
   if(S.paused){ renderPause(); show('pause'); $('#btnResume').focus(); }
   else hideAll();
 }
 function renderPause(){
+  $('#pauseMenu').hidden=false; $('#pauseConfirm').hidden=true;
   const st=STAGES[S.stage], gained=Math.max(0,S.score-S.stageStart);
   $('#pauseStage').textContent=`STAGE ${S.stage+1} · ${st.sub}`;
   $('#pauseTime').textContent=`${Math.ceil(Math.max(0,S.time))}초`;
@@ -552,8 +558,20 @@ function renderPause(){
   progress.setAttribute('aria-valuenow',Math.min(gained,st.target));
   progress.firstElementChild.style.width=`${Math.min(100,gained/st.target*100)}%`;
 }
+function openPauseConfirm(){
+  $('#pauseMenu').hidden=true; $('#pauseConfirm').hidden=false;
+  $('#pauseConfirmTitle').textContent='이번 스테이지를 다시 시작할까요?';
+  $('#pauseConfirmCopy').textContent='이번 스테이지의 점수는 초기화됩니다.\n이전 스테이지까지의 총점은 유지되고,\n생명은 3개로 복구됩니다.';
+  $('#btnPauseCancel').focus();
+}
+function closePauseConfirm(){
+  $('#pauseMenu').hidden=false; $('#pauseConfirm').hidden=true; $('#btnRestart').focus();
+}
 $('#btnPause').addEventListener('click', togglePause);
 $('#btnResume').addEventListener('click', togglePause);
+$('#btnRestart').addEventListener('click', openPauseConfirm);
+$('#btnPauseCancel').addEventListener('click', closePauseConfirm);
+$('#btnPauseConfirm').addEventListener('click', restartStage);
 $('#btnQuit').addEventListener('click', toTitle);
 $('#btnHome').addEventListener('click', toTitle);
 $('#btnStart').addEventListener('click', ()=>{ tone(1,.01,'sine',.001); newGame(); });

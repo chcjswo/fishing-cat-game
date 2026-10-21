@@ -16,6 +16,18 @@ runBrowser(async () => {
   await delay(200);
   check(p.S.time===time, '일시정지 중 시간 경과');
   check(document.activeElement===q('btnResume'), '계속하기에 초점 없음');
+  p.S.lives=1; p.startFever(); p.spawn('fish',0);
+  q('btnRestart').click();
+  check(!q('pauseConfirm').hidden && p.S.paused, '재시작 확인 창 없음');
+  q('btnPauseCancel').click();
+  check(p.S.lives===1 && p.S.score===14300 && p.S.time===time, '취소가 게임 상태를 변경함');
+  q('btnRestart').click();
+  window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));
+  check(q('pauseConfirm').hidden && p.S.paused, 'Esc가 확인 창만 닫아야 함');
+  q('btnRestart').click(); q('btnPauseConfirm').click();
+  check(q('intro').classList.contains('show') && !p.S.running, '재시작 후 스테이지 안내가 아님');
+  check(p.S.stage===3 && p.S.score===12000 && p.S.stageStart===12000, '재시작 시 이전 스테이지 총점 손실');
+  check(p.S.lives===3 && p.S.time===60 && !p.S.feverOn && p.S.fever===0 && p.S.items.length===0, '재시작 상태 초기화 오류');
   p.toTitle();
 });
 console.log('PASS: 일시정지 팝업의 스테이지 정보와 시간 정지');

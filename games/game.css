@@ -181,6 +181,8 @@ img{-webkit-user-drag:none;user-select:none}
 .pause-actions .pxbtn{width:100%;min-height:62px;font-size:24px}
 .pause-actions #btnResume{min-height:76px;font-size:32px}
 .pause-card button:focus-visible{outline:4px solid #2a8fb0;outline-offset:12px}
+.pause-confirm-title{font:bold 28px/1.6 'Galmuri11';margin:18px 0}
+.pause-confirm-copy{font:22px/1.8 'Galmuri11';color:#8a5a2a;margin-bottom:32px;white-space:pre-line}
 
 .intro-sub{text-align:center;font:bold 30px 'Galmuri11';color:#8a5a2a}
 .intro-goal{text-align:center;font:20px 'Galmuri11';color:#333;margin:14px 0 24px}
