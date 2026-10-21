@@ -596,8 +596,15 @@ function bindVolumeSlider(id, channel, preview){
 bindVolumeSlider('musicVolume', MUSIC_VOLUME);
 // 효과음은 계속 나오지 않으므로 조절할 때마다 한 번 들려준다.
 bindVolumeSlider('sfxVolume', SFX_VOLUME, SFX.eat);
-const sb=$('#btnSound'); sb.classList.toggle('off',!soundOn);
-sb.addEventListener('click', ()=>{ soundOn=!soundOn; localStorage.setItem('fc_sound',soundOn?'on':'off'); sb.classList.toggle('off',!soundOn); applyMusic(); SFX.eat(); });
+const sb=$('#btnSound');
+function renderSound(){
+  sb.classList.toggle('off',!soundOn); sb.setAttribute('aria-pressed',soundOn);
+  $('#btnPauseSound').setAttribute('aria-pressed',soundOn); $('#btnPauseSound b').textContent=soundOn?'ON':'OFF';
+}
+function toggleSound(){ soundOn=!soundOn; localStorage.setItem('fc_sound',soundOn?'on':'off'); renderSound(); applyMusic(); SFX.eat(); }
+renderSound();
+sb.addEventListener('click', toggleSound);
+$('#btnPauseSound').addEventListener('click', toggleSound);
 document.addEventListener('visibilitychange', ()=>{ suspendMusic(document.hidden); if(document.hidden && S.running && !S.paused) togglePause(); });
 
 /* ---------- native app ---------- */
@@ -613,10 +620,16 @@ let hapticOn = localStorage.getItem('fc_haptic') !== 'off';
 function haptic(pattern){ if(hapticOn) notifyNative('haptic',{pattern}); }
 // 진동은 앱에서만 울리므로 설정의 진동 줄도 앱에서만 보인다.
 const hapticButton=$('#btnHaptic');
-function renderHaptic(){ hapticButton.textContent=hapticOn?'ON':'OFF'; hapticButton.setAttribute('aria-pressed', hapticOn); }
+function renderHaptic(){
+  hapticButton.textContent=hapticOn?'ON':'OFF'; hapticButton.setAttribute('aria-pressed', hapticOn);
+  $('#btnPauseHaptic').setAttribute('aria-pressed',hapticOn); $('#btnPauseHaptic b').textContent=hapticOn?'ON':'OFF';
+}
 $('#hapticRow').hidden=!window.NativeBridge;
+$('#btnPauseHaptic').hidden=!window.NativeBridge;
 renderHaptic();
-hapticButton.addEventListener('click', ()=>{ hapticOn=!hapticOn; localStorage.setItem('fc_haptic', hapticOn?'on':'off'); renderHaptic(); haptic(HAPTIC.fish); });
+function toggleHaptic(){ hapticOn=!hapticOn; localStorage.setItem('fc_haptic', hapticOn?'on':'off'); renderHaptic(); haptic(HAPTIC.fish); }
+hapticButton.addEventListener('click', toggleHaptic);
+$('#btnPauseHaptic').addEventListener('click', toggleHaptic);
 function fishHaptic(){
   const now=performance.now();
   if(now-lastFishHaptic<FISH_HAPTIC_GAP_MS) return;
