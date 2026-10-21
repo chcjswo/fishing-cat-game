@@ -537,7 +537,20 @@ addEventListener('keydown', e=>{
 });
 function togglePause(){
   if(!S.running) return;
-  S.paused=!S.paused; S.paused?show('pause'):hideAll();
+  S.paused=!S.paused;
+  if(S.paused){ renderPause(); show('pause'); $('#btnResume').focus(); }
+  else hideAll();
+}
+function renderPause(){
+  const st=STAGES[S.stage], gained=Math.max(0,S.score-S.stageStart);
+  $('#pauseStage').textContent=`STAGE ${S.stage+1} · ${st.sub}`;
+  $('#pauseTime').textContent=`${Math.ceil(Math.max(0,S.time))}초`;
+  $('#pauseScore').textContent=gained.toLocaleString();
+  $('#pauseTarget').textContent=st.target.toLocaleString();
+  const progress=$('#pauseProgress');
+  progress.setAttribute('aria-valuemin',0); progress.setAttribute('aria-valuemax',st.target);
+  progress.setAttribute('aria-valuenow',Math.min(gained,st.target));
+  progress.firstElementChild.style.width=`${Math.min(100,gained/st.target*100)}%`;
 }
 $('#btnPause').addEventListener('click', togglePause);
 $('#btnResume').addEventListener('click', togglePause);
