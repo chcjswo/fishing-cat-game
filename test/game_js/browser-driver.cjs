@@ -33,8 +33,9 @@ async function main(){
     if(!verdict)throw new Error('Browser test timed out');
     if(screenshot){const result=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(screenshot,Buffer.from(result.data,'base64'));}
     console.log(verdict);
-    await send('Browser.close');
-    await exited;
+    // 브라우저가 닫히며 CDP 응답이 사라지거나 백그라운드 프로세스가 남을 수 있다.
+    send('Browser.close').catch(()=>{});
+    await Promise.race([exited,pause(2000)]);
   }finally{
     socket?.close();
     if(browser.exitCode===null)browser.kill();
