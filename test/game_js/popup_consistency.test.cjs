@@ -11,6 +11,12 @@ for (const [width, height] of [[320, 568], [390, 844], [640, 1024]]) {
     await new Promise((ok, fail) => { font.onload = ok; font.onerror = fail; document.head.append(font); });
     await document.fonts.load('36px Galmuri11');
     const p = probe, q = id => document.getElementById(id);
+    // 부하에 따라 타이머와 애니메이션 프레임의 진행 시점이 달라질 수 있다.
+    const finishCards = () => {
+      for (const animation of document.getAnimations()) {
+        if (animation.effect?.target.matches('.card')) animation.finish();
+      }
+    };
     const scale = q('game').getBoundingClientRect().width / 640;
     const fits = element => {
       const r = element.getBoundingClientRect();
@@ -30,6 +36,7 @@ for (const [width, height] of [[320, 568], [390, 844], [640, 1024]]) {
     };
 
     p.newGame(); p.S.stage = 29; p.openIntro(); p.S.running = true; p.togglePause(); await delay(300);
+    finishCards();
     const pauseCat = document.querySelector('.pause-cat'); await pauseCat.decode(); catSize(pauseCat);
     check((pauseCat.getBoundingClientRect().top - q('pauseHeading').getBoundingClientRect().bottom) / scale >= 28, '일시정지 제목과 고양이 여백 부족');
     fits(q('pauseCard')); fits(q('pauseHeading')); verticalGaps(['btnResume', 'btnRestart', 'btnQuit']);
@@ -37,11 +44,13 @@ for (const [width, height] of [[320, 568], [390, 844], [640, 1024]]) {
     q('btnPauseCancel').click();
 
     p.S.time = 0.01; p.step(0.05); await delay(650); await q('resCat').decode();
+    finishCards();
     catSize(q('resCat')); fits(document.querySelector('#result .card')); fits(q('resTitle'));
     check(parseFloat(getComputedStyle(document.querySelector('#result .card')).paddingTop) === 80, '시간 종료 높이 여유 부족');
     verticalGaps(['btnHome', 'btnNext', 'btnShare']);
     q('btnNext').click(); p.S.running = true; p.S.time = 24; p.endStage(false, 'lives'); await delay(1050);
     await q('resCat').decode(); catSize(q('resCat'));
+    finishCards();
     for (const available of [false, true]) {
       GameControl.setReviveAdAvailable(available);
       fits(document.querySelector('#result .card')); fits(q('resTitle'));
@@ -52,6 +61,7 @@ for (const [width, height] of [[320, 568], [390, 844], [640, 1024]]) {
     for (const multiplier of [1, 1.35, 1.8]) {
       p.newGame(); p.S.running = true; p.S.paused = true;
       p.S.score = p.STAGES[0].target * multiplier; p.S.time = 0.01; p.step(0.05); await delay(650);
+      finishCards();
       await q('resCat').decode(); catSize(q('resCat'));
       fits(document.querySelector('#result .card')); fits(q('resTitle'));
       const a = q('btnHome').getBoundingClientRect(), b = q('btnNext').getBoundingClientRect();
@@ -61,6 +71,7 @@ for (const [width, height] of [[320, 568], [390, 844], [640, 1024]]) {
     }
     // 캡처는 높이를 늘린 시간 종료 화면을 사용한다.
     p.newGame(); p.S.running = true; p.S.time = 0.01; p.step(0.05); await delay(650);
+    finishCards();
   }, { native: true, width, height, screenshot: output ? path.join(output, `popup-${width}x${height}.png`) : undefined });
 }
 console.log('PASS: 팝업 고양이 108x112·제목 여백·공통 버튼 간격 32·작은 화면/광고 상태/별 1~3개');
