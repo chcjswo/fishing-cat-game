@@ -384,8 +384,8 @@ function collect(it){
     if(S.invuln<=0) hurt(it);
     else { setFace('yuck',600); SFX.yuck(); }
   } else if(d.cls==='heart'){
-    if(S.lives<MAX_LIFE){ S.lives++; renderHearts({idx:S.lives-1,type:'gain'}); popText('생명 +1', cx, cy-110, 'heal'); }
-    else { addScore(300); popText('+300', cx, cy-110, 'heal'); }
+    if(S.lives<MAX_LIFE){ S.lives++; renderHearts({idx:S.lives-1,type:'gain'}); popText('생명 +1', cx, cy-98, 'heal'); }
+    else { addScore(300); popText('+300', cx, cy-98, 'heal'); }
     setFace('happy'); SFX.heal(); splats(cx,cy+30,'#ff9ab4',10);
   } else if(d.dmg){
     if(S.invuln>0){ popText('휴~', cx, cy-30); return; }
