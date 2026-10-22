@@ -217,6 +217,18 @@ img{-webkit-user-drag:none;user-select:none}
 .card dl.res{font:bold 22px 'Galmuri11';gap:14px 20px;margin:14px 10px 34px}
 .card dl.res dd{font-size:28px;color:#e3591b}
 
+/* ---------- time up ---------- */
+#result.time-up .card{width:520px;padding:52px 40px 36px;text-align:center}
+#result.time-up .card-head{font-size:36px;letter-spacing:1px}
+#result.time-up .stars{display:none}
+#result.time-up .res-cat{width:108px;height:112px;object-fit:contain;margin:0 auto 18px}
+#result.time-up dl.res{margin:0 0 28px}
+#result.time-up dl.res dd{font-size:24px}
+#result.time-up .result-actions{flex-direction:column;gap:24px}
+#result.time-up .share-row{margin-top:24px}
+#result.time-up .result-actions .pxbtn,#result.time-up #btnShare{width:100%;min-height:62px;font-size:24px}
+#result.time-up button:focus-visible{outline:4px solid #2a8fb0;outline-offset:12px}
+
 /* ---------- game over ---------- */
 #result.game-over .card{width:540px;padding:86px 38px 30px;text-align:center}
 #result.game-over .card-head{font-size:38px}

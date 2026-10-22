@@ -517,6 +517,7 @@ function endStage(timeUp, why){
     S.gameOver=gameOver;
     if(!gameOver) clearItems();
     $('#result').classList.toggle('game-over',gameOver);
+    $('#result').classList.toggle('time-up',why==='time'&&!clear);
     $('#resLocation').hidden=!gameOver; $('#resTime').hidden=!gameOver; $('#reviveArea').hidden=!gameOver;
     $('#resLocation').textContent=`STAGE ${S.stage+1} · ${st.sub}`;
     $('#resTime').textContent=`남은 시간 ${Math.ceil(Math.max(0,S.time))}초`;
