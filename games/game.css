@@ -169,8 +169,8 @@ img{-webkit-user-drag:none;user-select:none}
 /* ---------- pause ---------- */
 .pause-card{width:520px;padding:80px 40px 36px;text-align:center;color:#3a2412}
 .pause-card .card-head{font-size:36px;letter-spacing:1px}
-.pause-cat,.res-cat{display:block;width:108px;height:112px;object-fit:contain}
-.pause-cat{margin:0 auto 12px;image-rendering:pixelated}
+.pause-cat,.res-cat{display:block;width:120px;height:124px;object-fit:contain}
+.pause-cat{margin:0 auto 24px;image-rendering:pixelated}
 .pause-stage{font:bold 23px/1.5 'Galmuri11';color:#8a5a2a}
 .pause-summary{margin:18px 0 28px;padding:18px;background:#f7e7b5;box-shadow:inset 0 0 0 3px #d9bf7c;font:22px/1.6 'Galmuri11'}
 .pause-summary strong{color:#d34b25}
@@ -211,7 +211,7 @@ img{-webkit-user-drag:none;user-select:none}
 .stars i:nth-child(2){transform:translateY(-14px)}
 .stars i.on:nth-child(2){animation-delay:.15s}.stars i.on:nth-child(3){animation-delay:.3s}
 @keyframes starIn{from{transform:scale(0)}}
-.res-cat{margin:6px auto 0}
+.res-cat{margin:34px auto 24px}
 .res-cat.cheer{animation:leap .4s steps(2) infinite alternate}
 .res-cat.sulk{transform-origin:50% 100%;animation:sulk 1.4s steps(2) infinite}
 @keyframes sulk{50%{transform:scaleY(.96)}}
@@ -233,7 +233,7 @@ img{-webkit-user-drag:none;user-select:none}
 #result.game-over .card{width:540px;padding:86px 38px 30px;text-align:center}
 #result.game-over .card-head{font-size:38px}
 #result.game-over .stars{display:none}
-#result.game-over .res-cat{margin:0 auto 12px}
+#result.game-over .res-cat{margin:0 auto 24px}
 .result-stage{font:bold 22px/1.5 'Galmuri11';color:#8a5a2a}
 .result-time{margin:6px 0 18px;font:22px 'Galmuri11';color:#8a5a2a}
 #result.game-over dl.res{font-size:21px;gap:12px 16px;margin:18px 4px 26px}

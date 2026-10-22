@@ -25,7 +25,7 @@ for (const [width, height] of [[320, 568], [390, 844], [640, 1024]]) {
     };
     const catSize = element => {
       const s = getComputedStyle(element);
-      check(s.width === '108px' && s.height === '112px' && s.objectFit === 'contain', '고양이 크기 불일치');
+      check(s.width === '120px' && s.height === '124px' && s.objectFit === 'contain', '고양이 크기 불일치');
     };
     const verticalGaps = ids => {
       for (let i = 1; i < ids.length; i++) {
@@ -39,6 +39,7 @@ for (const [width, height] of [[320, 568], [390, 844], [640, 1024]]) {
     finishCards();
     const pauseCat = document.querySelector('.pause-cat'); await pauseCat.decode(); catSize(pauseCat);
     check((pauseCat.getBoundingClientRect().top - q('pauseHeading').getBoundingClientRect().bottom) / scale >= 28, '일시정지 제목과 고양이 여백 부족');
+    check((q('pauseStage').getBoundingClientRect().top - pauseCat.getBoundingClientRect().bottom) / scale >= 23.9, '일시정지 고양이 아래 여백 부족');
     fits(q('pauseCard')); fits(q('pauseHeading')); verticalGaps(['btnResume', 'btnRestart', 'btnQuit']);
     q('btnRestart').click(); verticalGaps(['btnPauseCancel', 'btnPauseConfirm']); fits(q('pauseCard'));
     q('btnPauseCancel').click();
@@ -46,11 +47,15 @@ for (const [width, height] of [[320, 568], [390, 844], [640, 1024]]) {
     p.S.time = 0.01; p.step(0.05); await delay(650); await q('resCat').decode();
     finishCards();
     catSize(q('resCat')); fits(document.querySelector('#result .card')); fits(q('resTitle'));
+    check((q('resCat').getBoundingClientRect().top - q('resTitle').getBoundingClientRect().bottom) / scale >= 28, '시간 종료 고양이 위 여백 부족');
+    check((document.querySelector('#result dl.res').getBoundingClientRect().top - q('resCat').getBoundingClientRect().bottom) / scale >= 23.9, '시간 종료 고양이 아래 여백 부족');
     check(parseFloat(getComputedStyle(document.querySelector('#result .card')).paddingTop) === 80, '시간 종료 높이 여유 부족');
     verticalGaps(['btnHome', 'btnNext', 'btnShare']);
     q('btnNext').click(); p.S.running = true; p.S.time = 24; p.endStage(false, 'lives'); await delay(1050);
     await q('resCat').decode(); catSize(q('resCat'));
     finishCards();
+    check((q('resCat').getBoundingClientRect().top - q('resTitle').getBoundingClientRect().bottom) / scale >= 28, '게임오버 고양이 위 여백 부족');
+    check((q('resLocation').getBoundingClientRect().top - q('resCat').getBoundingClientRect().bottom) / scale >= 23.9, '게임오버 고양이 아래 여백 부족');
     for (const available of [false, true]) {
       GameControl.setReviveAdAvailable(available);
       fits(document.querySelector('#result .card')); fits(q('resTitle'));
@@ -63,6 +68,8 @@ for (const [width, height] of [[320, 568], [390, 844], [640, 1024]]) {
       p.S.score = p.STAGES[0].target * multiplier; p.S.time = 0.01; p.step(0.05); await delay(650);
       finishCards();
       await q('resCat').decode(); catSize(q('resCat'));
+      check((q('resCat').getBoundingClientRect().top - q('resStars').getBoundingClientRect().bottom) / scale >= 23.9, '클리어 고양이 위 여백 부족');
+      check((document.querySelector('#result dl.res').getBoundingClientRect().top - q('resCat').getBoundingClientRect().bottom) / scale >= 23.9, '클리어 고양이 아래 여백 부족');
       fits(document.querySelector('#result .card')); fits(q('resTitle'));
       const a = q('btnHome').getBoundingClientRect(), b = q('btnNext').getBoundingClientRect();
       check(Math.abs((b.left - a.right) / scale - 32) < 0.2, '클리어 가로 버튼 간격');
@@ -74,4 +81,4 @@ for (const [width, height] of [[320, 568], [390, 844], [640, 1024]]) {
     finishCards();
   }, { native: true, width, height, screenshot: output ? path.join(output, `popup-${width}x${height}.png`) : undefined });
 }
-console.log('PASS: 팝업 고양이 108x112·제목 여백·공통 버튼 간격 32·작은 화면/광고 상태/별 1~3개');
+console.log('PASS: 팝업 고양이 120x124·상하 여백·공통 버튼 간격 32·작은 화면/광고 상태/별 1~3개');
