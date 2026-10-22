@@ -16,17 +16,17 @@ const PROBE =
 const NATIVE_BRIDGE =
   'window.bridgeEvents=[];window.NativeBridge={send:(type,payload)=>bridgeEvents.push([type,payload||{}])};';
 
-function runBrowser(script, { screenshot, width = 640, height = 1024, testMode = false, native = false } = {}) {
+function runBrowser(script, { screenshot, width = 640, height = 1024, testMode = false, native = false, gameRoot = root } = {}) {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'fishing-cat-browser-'));
-  let html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-  html = html.replace('<head>', `<head><base href="${pathToFileURL(root + path.sep).href}">`);
+  let html = fs.readFileSync(path.join(gameRoot, 'index.html'), 'utf8');
+  html = html.replace('<head>', `<head><base href="${pathToFileURL(gameRoot + path.sep).href}">`);
   html = html.replace(/<link[^>]+>/g, '');
   html = html.replace(
     '</head>',
-    `<style>${fs.readFileSync(path.join(root, 'game.css'), 'utf8')}</style><script>window.testErrors=[];window.addEventListener('error',e=>testErrors.push(e.message));localStorage.setItem('fc_sound','off');${native ? NATIVE_BRIDGE : ''}</script></head>`,
+    `<style>${fs.readFileSync(path.join(gameRoot, 'game.css'), 'utf8')}</style><script>window.testErrors=[];window.addEventListener('error',e=>testErrors.push(e.message));localStorage.setItem('fc_sound','off');${native ? NATIVE_BRIDGE : ''}</script></head>`,
   );
   for (const file of ['pixel.js', 'game.js']) {
-    let code = fs.readFileSync(path.join(root, file), 'utf8');
+    let code = fs.readFileSync(path.join(gameRoot, file), 'utf8');
     if (file === 'game.js') {
       if (testMode) code = code.replace('const TEST_MODE = false;', 'const TEST_MODE = true;');
       code = code.replace('/* ---------- init ---------- */', PROBE + '/* ---------- init ---------- */');
