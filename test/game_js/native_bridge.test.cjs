@@ -9,8 +9,10 @@ runBrowser(async () => {
 
   document.querySelector('#btnCredits').click();
   check(screens().at(-1) === 'credits', 'credits 이벤트 없음');
+  check(document.querySelector('#title').classList.contains('show'), '크레딧 팝업 뒤에 타이틀 화면이 사라졌다');
   document.querySelector('#credits [data-close]').click();
   check(screens().at(-1) === 'title', '크레딧 닫힘 후 title 이벤트 없음');
+  check(!document.querySelector('#credits').classList.contains('show'), '크레딧을 닫았는데 팝업이 남아 있다');
 
   p.newGame();
   check(screens().at(-1) === 'intro', 'intro 이벤트 없음');

@@ -476,7 +476,7 @@ function step(dt){
 }
 
 /* ---------- flow ---------- */
-function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('show', s.id===id)); setMusic(...(SCREEN_MUSIC[id]||[null])); notifyNative('screen',{screen:id}); }
+function show(id, behind){ document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('show', s.id===id || s.id===behind)); setMusic(...(SCREEN_MUSIC[id]||[null])); notifyNative('screen',{screen:id}); }
 function hideAll(){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('show')); setMusic('play'); notifyNative('screen',{screen:'play'}); }
 function clearItems(){ S.items.forEach(i=>{i.el.remove(); i.warnEl&&i.warnEl.remove();}); S.items=[]; $('#fx').innerHTML=''; $('#blastFx').querySelectorAll('.pop.heal').forEach(el=>el.remove()); }
 function applyTheme(background=STAGES[S.stage].background){ const st=STAGES[S.stage], g=$('#game'); g.classList.remove('day','sunset','night'); g.classList.add(st.theme); BG&&BG.setTheme(st.theme,background,!!background&&st.backgroundPixelated); const next=STAGES[S.stage+1]; if(BG&&background&&next?.background) BG.loadBackground(next.background); }
@@ -669,7 +669,7 @@ $('#btnHome').addEventListener('click', toTitle);
 $('#btnStart').addEventListener('click', ()=>{ tone(1,.01,'sine',.001); newGame(); });
 $('#btnGo').addEventListener('click', beginStage);
 $('#btnShare').addEventListener('click', ()=>notifyNative('share',{score:S.score, stage:S.stage+1, best}));
-$('#btnCredits').addEventListener('click', ()=>show('credits'));
+$('#btnCredits').addEventListener('click', ()=>show('credits','title'));
 $('#credits [data-close]').addEventListener('click', ()=>show('title'));
 $('#credits').addEventListener('click', e=>{ if(e.target.id==='credits') show('title'); });
 $('#btnSettings').addEventListener('click', ()=>show('settings'));
