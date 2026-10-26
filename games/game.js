@@ -672,7 +672,7 @@ $('#btnShare').addEventListener('click', ()=>notifyNative('share',{score:S.score
 $('#btnCredits').addEventListener('click', ()=>show('credits','title'));
 $('#credits [data-close]').addEventListener('click', ()=>show('title'));
 $('#credits').addEventListener('click', e=>{ if(e.target.id==='credits') show('title'); });
-$('#btnSettings').addEventListener('click', ()=>show('settings'));
+$('#btnSettings').addEventListener('click', ()=>show('settings','title'));
 $('#settings [data-close]').addEventListener('click', ()=>show('title'));
 $('#settings').addEventListener('click', e=>{ if(e.target.id==='settings') show('title'); });
 function bindVolumeSlider(id, channel, preview){
