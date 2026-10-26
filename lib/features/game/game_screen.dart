@@ -29,9 +29,13 @@ class _GameScreenState extends State<GameScreen> {
   late final AppLifecycleListener _lifecycle;
   GameScene _scene = GameScene.title;
 
-  /// 최소 표시 시간이 지난 뒤 네이티브 스플래시를 걷는다.
-  void _removeSplash() =>
-      widget.minimumSplash.then((_) => FlutterNativeSplash.remove());
+  /// 최소 표시 시간이 지난 뒤 네이티브 스플래시를 걷고, 타이틀 화면부터
+  /// 음악이 나오도록 게임이 멈춰 둔 음악을 재개한다.
+  Future<void> _removeSplash() async {
+    await widget.minimumSplash;
+    FlutterNativeSplash.remove();
+    await _callGameControl('unmuteMusic');
+  }
 
   @override
   void initState() {
