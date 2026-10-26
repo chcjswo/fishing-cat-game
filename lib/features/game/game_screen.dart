@@ -11,6 +11,7 @@ import '../../shared/services/haptics.dart';
 import '../../shared/services/native_bridge.dart';
 import '../../shared/services/score_share.dart';
 import 'back_action.dart';
+import 'splash_overlay.dart';
 
 /// 낚시냥 게임을 표시하는 전체 화면 WebView.
 class GameScreen extends StatefulWidget {
@@ -26,9 +27,17 @@ class _GameScreenState extends State<GameScreen> {
   late final AppLifecycleListener _lifecycle;
   GameScene _scene = GameScene.title;
 
+  /// 게임 페이지 로드가 끝났는지(실패 포함). 스플래시가 걷히는 조건이다.
+  bool _pageReady = false;
+
   @override
   void initState() {
     super.initState();
+    // 네이티브 스플래시(검은 화면)는 첫 프레임에 걷고, 로고 페이드인은
+    // SplashOverlay가 이어받는다.
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => FlutterNativeSplash.remove(),
+    );
     _bridge.on('screen', (payload) {
       _scene = GameScene.fromName(payload['screen'] as String?) ?? _scene;
     });
@@ -130,37 +139,42 @@ class _GameScreenState extends State<GameScreen> {
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _handleBack();
       },
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        // 위쪽은 게임 배경을 카메라 구멍 아래까지 채우고 HUD만 게임이 내린다.
-        // 홈 인디케이터 영역은 검은 여백으로 남겨 조작 버튼이 가려지지 않게 한다.
-        body: SafeArea(
-          top: false,
-          child: InAppWebView(
-            initialUrlRequest: URLRequest(url: WebUri(gameUrl)),
-            initialSettings: InAppWebViewSettings(
-              // 게임이 START 터치에서 AudioContext를 깨우므로 사용자 제스처 요구를
-              // 꺼서 첫 터치 이후 효과음이 바로 나오게 한다.
-              mediaPlaybackRequiresUserGesture: false,
-              allowsInlineMediaPlayback: true,
-              supportZoom: false,
-              disableHorizontalScroll: true,
-              disableVerticalScroll: true,
-              overScrollMode: OverScrollMode.NEVER,
-              transparentBackground: false,
+      child: SplashOverlay(
+        ready: _pageReady,
+        child: Scaffold(
+          backgroundColor: Colors.black,
+          // 위쪽은 게임 배경을 카메라 구멍 아래까지 채우고 HUD만 게임이 내린다.
+          // 홈 인디케이터 영역은 검은 여백으로 남겨 조작 버튼이 가려지지 않게 한다.
+          body: SafeArea(
+            top: false,
+            child: InAppWebView(
+              initialUrlRequest: URLRequest(url: WebUri(gameUrl)),
+              initialSettings: InAppWebViewSettings(
+                // 게임이 START 터치에서 AudioContext를 깨우므로 사용자 제스처 요구를
+                // 꺼서 첫 터치 이후 효과음이 바로 나오게 한다.
+                mediaPlaybackRequiresUserGesture: false,
+                allowsInlineMediaPlayback: true,
+                supportZoom: false,
+                disableHorizontalScroll: true,
+                disableVerticalScroll: true,
+                overScrollMode: OverScrollMode.NEVER,
+                transparentBackground: false,
+              ),
+              initialUserScripts: UnmodifiableListView([
+                NativeBridge.userScript,
+              ]),
+              onWebViewCreated: (controller) {
+                _webView = controller;
+                _bridge.attach(controller);
+              },
+              // 게임 페이지가 다 로드되어야 스플래시가 걷혀 빈 화면 없이 타이틀로
+              // 넘어간다. 로드 실패 시에도 스플래시에 갇히지 않도록 준비로 본다.
+              onLoadStop: (_, _) {
+                _sendSafeTop();
+                setState(() => _pageReady = true);
+              },
+              onReceivedError: (_, _, _) => setState(() => _pageReady = true),
             ),
-            initialUserScripts: UnmodifiableListView([NativeBridge.userScript]),
-            onWebViewCreated: (controller) {
-              _webView = controller;
-              _bridge.attach(controller);
-            },
-            // 게임 페이지가 다 로드되면 스플래시를 걷어내 빈 화면 없이 타이틀로
-            // 넘어간다. 로드 실패 시에도 스플래시에 갇히지 않도록 함께 걷어낸다.
-            onLoadStop: (_, _) {
-              _sendSafeTop();
-              FlutterNativeSplash.remove();
-            },
-            onReceivedError: (_, _, _) => FlutterNativeSplash.remove(),
           ),
         ),
       ),
