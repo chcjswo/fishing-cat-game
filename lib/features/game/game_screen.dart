@@ -26,6 +26,16 @@ class _GameScreenState extends State<GameScreen> {
   late final AppLifecycleListener _lifecycle;
   GameScene _scene = GameScene.title;
 
+  /// 페이지가 일찍 로드돼도 로고 스플래시를 이 시간만큼은 보여 준다.
+  static const Duration _minimumSplashDuration = Duration(seconds: 3);
+  final Future<void> _minimumSplash = Future<void>.delayed(
+    _minimumSplashDuration,
+  );
+
+  /// 최소 표시 시간이 지난 뒤 네이티브 스플래시를 걷는다.
+  void _removeSplash() =>
+      _minimumSplash.then((_) => FlutterNativeSplash.remove());
+
   @override
   void initState() {
     super.initState();
@@ -154,13 +164,14 @@ class _GameScreenState extends State<GameScreen> {
               _webView = controller;
               _bridge.attach(controller);
             },
-            // 게임 페이지가 다 로드되면 스플래시를 걷어내 빈 화면 없이 타이틀로
-            // 넘어간다. 로드 실패 시에도 스플래시에 갇히지 않도록 함께 걷어낸다.
+            // 게임 페이지가 다 로드되면(최소 3초 뒤) 스플래시를 걷어내 빈 화면
+            // 없이 타이틀로 넘어간다. 로드 실패 시에도 스플래시에 갇히지 않도록
+            // 함께 걷어낸다.
             onLoadStop: (_, _) {
               _sendSafeTop();
-              FlutterNativeSplash.remove();
+              _removeSplash();
             },
-            onReceivedError: (_, _, _) => FlutterNativeSplash.remove(),
+            onReceivedError: (_, _, _) => _removeSplash(),
           ),
         ),
       ),
