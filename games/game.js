@@ -234,11 +234,13 @@ const MUSIC = { title:loadTrack('assets/sounds/intro.mp3'), play:loadTrack('asse
 // 화면별 곡과 재생 여부. 일시정지는 위치를 유지하고, 목록에 없는 화면은 음악을 끈다.
 const SCREEN_MUSIC = { title:['title',true], credits:['title',true], settings:['title',true], pause:['play',false] };
 let music={track:null, playing:false}, musicSuspended=false;
+// 앱에서는 게임이 스플래시 뒤에서 미리 로드되므로, 스플래시를 걷은 앱이 unmuteMusic을 부를 때까지 음악을 틀지 않는다.
+let musicAwaitingSplash=!!window.NativeBridge;
 function setMusic(track, playing=true){ music={track,playing}; applyMusic(); }
 function applyMusic(){
   for(const [name,a] of Object.entries(MUSIC)){
     if(name!==music.track){ a.pause(); a.currentTime=0; continue; }
-    if(music.playing && soundOn && !musicSuspended && a.src){ audioCtx(); a.play().catch(()=>{}); } else a.pause();
+    if(music.playing && soundOn && !musicSuspended && !musicAwaitingSplash && a.src){ audioCtx(); a.play().catch(()=>{}); } else a.pause();
   }
 }
 // 앱이 백그라운드로 가면 화면과 관계없이 음악을 멈춘다.
@@ -741,7 +743,7 @@ if(window.NativeBridge) window.GameControl = {
   // visibilitychange가 WebView에서 항상 오지는 않으므로 앱 생명주기로 음악을 멈추고 재개한다.
   muteMusic(){ suspendMusic(true); },
   setSafeTop(px){ SAFE_TOP=px; fit(); },
-  unmuteMusic(){ suspendMusic(false); },
+  unmuteMusic(){ musicAwaitingSplash=false; suspendMusic(false); },
 };
 
 /* ---------- init ---------- */
