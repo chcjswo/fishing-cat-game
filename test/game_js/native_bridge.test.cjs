@@ -14,6 +14,13 @@ runBrowser(async () => {
   check(screens().at(-1) === 'title', '크레딧 닫힘 후 title 이벤트 없음');
   check(!document.querySelector('#credits').classList.contains('show'), '크레딧을 닫았는데 팝업이 남아 있다');
 
+  document.querySelector('#btnSettings').click();
+  check(screens().at(-1) === 'settings', 'settings 이벤트 없음');
+  check(document.querySelector('#title').classList.contains('show'), '설정 팝업 뒤에 타이틀 화면이 사라졌다');
+  document.querySelector('#settings [data-close]').click();
+  check(screens().at(-1) === 'title', '설정 닫힘 후 title 이벤트 없음');
+  check(!document.querySelector('#settings').classList.contains('show'), '설정을 닫았는데 팝업이 남아 있다');
+
   p.newGame();
   check(screens().at(-1) === 'intro', 'intro 이벤트 없음');
   await p.beginStage();
