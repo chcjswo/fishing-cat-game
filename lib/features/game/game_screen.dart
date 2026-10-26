@@ -14,7 +14,10 @@ import 'back_action.dart';
 
 /// 낚시냥 게임을 표시하는 전체 화면 WebView.
 class GameScreen extends StatefulWidget {
-  const GameScreen({super.key});
+  const GameScreen({super.key, required this.minimumSplash});
+
+  /// 끝나기 전에는 페이지가 로드돼도 로고 스플래시를 걷지 않는다.
+  final Future<void> minimumSplash;
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -26,15 +29,9 @@ class _GameScreenState extends State<GameScreen> {
   late final AppLifecycleListener _lifecycle;
   GameScene _scene = GameScene.title;
 
-  /// 페이지가 일찍 로드돼도 로고 스플래시를 이 시간만큼은 보여 준다.
-  static const Duration _minimumSplashDuration = Duration(seconds: 3);
-  final Future<void> _minimumSplash = Future<void>.delayed(
-    _minimumSplashDuration,
-  );
-
   /// 최소 표시 시간이 지난 뒤 네이티브 스플래시를 걷는다.
   void _removeSplash() =>
-      _minimumSplash.then((_) => FlutterNativeSplash.remove());
+      widget.minimumSplash.then((_) => FlutterNativeSplash.remove());
 
   @override
   void initState() {
