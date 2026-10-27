@@ -23,6 +23,15 @@ img{-webkit-user-drag:none;user-select:none}
 #feverFx .ring:nth-of-type(3){border-color:#ff6fc8;box-shadow:0 0 24px #ff6fc8,inset 0 0 24px #ff6fc8;animation-delay:-.4s}
 #feverFx .ring:nth-of-type(4){border-color:#6fe8ff;box-shadow:0 0 24px #6fe8ff,inset 0 0 24px #6fe8ff;animation-delay:-.8s}
 @keyframes feverRing{from{transform:scale(.05);opacity:1}to{transform:scale(1);opacity:0}}
+/* 400px 타일을 위로 한 칸씩 올려 끊김 없이 반복 */
+#feverFx .sparkles{left:0;top:0;width:100%;height:calc(100% + 400px);background-size:640px 400px;
+ background-image:radial-gradient(circle at 60px 50px,#fff 0 8px,transparent 9px),radial-gradient(circle at 210px 300px,#ffe14a 0 10px,transparent 11px),
+ radial-gradient(circle at 330px 120px,#ff6fc8 0 8px,transparent 9px),radial-gradient(circle at 480px 230px,#6fe8ff 0 10px,transparent 11px),
+ radial-gradient(circle at 590px 360px,#fff 0 6px,transparent 7px),radial-gradient(circle at 140px 200px,#ff6fc8 0 6px,transparent 7px),
+ radial-gradient(circle at 420px 30px,#ffe14a 0 6px,transparent 7px),radial-gradient(circle at 20px 380px,#6fe8ff 0 8px,transparent 9px);
+ animation:feverRise 1.6s linear infinite,feverTwinkle .24s steps(2) infinite}
+@keyframes feverRise{to{transform:translateY(-400px)}}
+@keyframes feverTwinkle{50%{opacity:.6}}
 
 /* ---------- penguins ---------- */
 #penguins .pg{position:absolute;bottom:322px;height:250px;transform-origin:50% 100%}
