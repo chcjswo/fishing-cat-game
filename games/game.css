@@ -18,6 +18,11 @@ img{-webkit-user-drag:none;user-select:none}
  background:radial-gradient(closest-side,rgba(255,236,120,.7),rgba(255,120,190,.45) 40%,rgba(150,110,255,.2) 70%,rgba(150,110,255,0));
  animation:feverPulse .5s ease-in-out infinite alternate}
 @keyframes feverPulse{from{transform:scale(.85);opacity:.7}to{transform:scale(1.05);opacity:1}}
+#feverFx .ring{left:50%;top:calc(300px + var(--extra)/2);width:900px;height:900px;margin:-450px 0 0 -450px;border-radius:50%;
+ border:14px solid #ffe14a;box-shadow:0 0 24px #ffe14a,inset 0 0 24px #ffe14a;opacity:0;animation:feverRing 1.2s ease-out infinite}
+#feverFx .ring:nth-of-type(3){border-color:#ff6fc8;box-shadow:0 0 24px #ff6fc8,inset 0 0 24px #ff6fc8;animation-delay:-.4s}
+#feverFx .ring:nth-of-type(4){border-color:#6fe8ff;box-shadow:0 0 24px #6fe8ff,inset 0 0 24px #6fe8ff;animation-delay:-.8s}
+@keyframes feverRing{from{transform:scale(.05);opacity:1}to{transform:scale(1);opacity:0}}
 
 /* ---------- penguins ---------- */
 #penguins .pg{position:absolute;bottom:322px;height:250px;transform-origin:50% 100%}
