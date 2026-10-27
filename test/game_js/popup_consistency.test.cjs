@@ -71,10 +71,7 @@ for (const [width, height] of [[320, 568], [390, 844], [640, 1024]]) {
       check((q('resCat').getBoundingClientRect().top - q('resStars').getBoundingClientRect().bottom) / scale >= 23.9, '클리어 고양이 위 여백 부족');
       check((document.querySelector('#result dl.res').getBoundingClientRect().top - q('resCat').getBoundingClientRect().bottom) / scale >= 23.9, '클리어 고양이 아래 여백 부족');
       fits(document.querySelector('#result .card')); fits(q('resTitle'));
-      const a = q('btnHome').getBoundingClientRect(), b = q('btnNext').getBoundingClientRect();
-      check(Math.abs((b.left - a.right) / scale - 32) < 0.2, '클리어 가로 버튼 간격');
-      const shareGap = (q('btnShare').getBoundingClientRect().top - Math.max(a.bottom, b.bottom)) / scale;
-      check(Math.abs(shareGap - 32) < 0.2, '클리어 공유 간격');
+      verticalGaps(['btnHome', 'btnNext', 'btnShare']);
     }
     // 캡처는 높이를 늘린 시간 종료 화면을 사용한다.
     p.newGame(); p.S.running = true; p.S.time = 0.01; p.step(0.05); await delay(650);
