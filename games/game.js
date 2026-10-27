@@ -421,7 +421,7 @@ function endFever(){
   S.feverOn=false; if(BG) BG.fever=false; $('#game').classList.remove('fever'); renderFever();
   // 피버 때 쏟아진 물고기가 남으면 게이지가 금방 다시 차므로 화면을 비우고 새로 시작한다
   S.items.forEach(it=>{ it.el.remove(); it.warnEl&&it.warnEl.remove(); splats(it.x+it.def.w/2,Math.max(60,it.y),'#fff',5); });
-  S.items=[];
+  S.items=[]; S.spawnT=.6;
 }
 
 /* ---------- loop ---------- */
