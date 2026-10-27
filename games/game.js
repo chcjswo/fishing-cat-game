@@ -363,7 +363,7 @@ function checkCatchNow(){
 }
 function popText(txt, x, y, cls=''){
   const p=document.createElement('div'); p.className='pop '+cls; p.textContent=txt; p.style.left=x+'px'; p.style.top=y+'px';
-  $(cls==='heal'?'#blastFx':'#fx').appendChild(p); setTimeout(()=>p.remove(),800);
+  $('#blastFx').appendChild(p); setTimeout(()=>p.remove(),800);
 }
 function splats(x,y,color='#fff',n=8){
   for(let i=0;i<n;i++){ const s=document.createElement('div'); s.className='pxl'; s.style.left=x+'px'; s.style.top=y+'px'; s.style.background=color;
@@ -480,7 +480,7 @@ function step(dt){
 /* ---------- flow ---------- */
 function show(id, behind){ document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('show', s.id===id || s.id===behind)); setMusic(...(SCREEN_MUSIC[id]||[null])); notifyNative('screen',{screen:id}); }
 function hideAll(){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('show')); setMusic('play'); notifyNative('screen',{screen:'play'}); }
-function clearItems(){ S.items.forEach(i=>{i.el.remove(); i.warnEl&&i.warnEl.remove();}); S.items=[]; $('#fx').innerHTML=''; $('#blastFx').querySelectorAll('.pop.heal').forEach(el=>el.remove()); }
+function clearItems(){ S.items.forEach(i=>{i.el.remove(); i.warnEl&&i.warnEl.remove();}); S.items=[]; $('#fx').innerHTML=''; $('#blastFx').querySelectorAll('.pop').forEach(el=>el.remove()); }
 function applyTheme(background=STAGES[S.stage].background){ const st=STAGES[S.stage], g=$('#game'); g.classList.remove('day','sunset','night'); g.classList.add(st.theme); BG&&BG.setTheme(st.theme,background,!!background&&st.backgroundPixelated); const next=STAGES[S.stage+1]; if(BG&&background&&next?.background) BG.loadBackground(next.background); }
 
 let resultTimer=null;
