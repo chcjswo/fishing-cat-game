@@ -419,7 +419,10 @@ function startFever(){
 }
 function endFever(){
   S.feverOn=false; if(BG) BG.fever=false; $('#game').classList.remove('fever'); renderFever();
-  // 피버 때 쏟아진 물고기가 남으면 게이지가 금방 다시 차므로 화면을 비우고 새로 시작한다
+}
+// 피버 때 쏟아진 물고기가 남으면 게이지가 금방 다시 차므로 화면을 비우고 새로 시작한다.
+// endFever는 게임오버·재시작에서도 불리므로(부활 시 물고기 유지) 시간이 다 됐을 때만 부른다.
+function clearAfterFever(){
   S.items.forEach(it=>{ it.el.remove(); it.warnEl&&it.warnEl.remove(); splats(it.x+it.def.w/2,Math.max(60,it.y),'#fff',5); });
   S.items=[]; S.spawnT=.6;
 }
@@ -447,7 +450,7 @@ function step(dt){
 
   if(S.feverOn){
     S.feverT-=dt; renderFever();
-    if(S.feverT<=0) endFever();
+    if(S.feverT<=0){ endFever(); clearAfterFever(); }
   }
   // penguins fish constantly; in fever they go crazy
   S.ambT-=dt;
