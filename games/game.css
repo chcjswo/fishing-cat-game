@@ -238,12 +238,12 @@ img{-webkit-user-drag:none;user-select:none}
 .card dl.res dd{font-size:28px;color:#e3591b}
 
 /* ---------- result (clear/time up 공통, game over는 아래에서 덮어씀) ---------- */
+#result .card-head{font-size:36px;letter-spacing:1px}
 #result .result-actions{flex-direction:column}
 #result .result-actions .pxbtn,#result #btnShare{width:100%;min-height:62px;font-size:24px}
 
 /* ---------- time up ---------- */
 #result.time-up .card{width:520px;padding:80px 40px 44px;text-align:center}
-#result.time-up .card-head{font-size:36px;letter-spacing:1px}
 #result.time-up .stars{display:none}
 #result.time-up .res-cat{margin:0 auto 24px}
 #result.time-up dl.res{margin:0 0 36px}
