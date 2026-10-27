@@ -13,6 +13,11 @@ img{-webkit-user-drag:none;user-select:none}
 /* fever background fx — 방사형 줄무늬는 욱일기를 연상시키므로 쓰지 않는다 */
 #feverFx{position:absolute;inset:0;opacity:0;transition:opacity .3s;pointer-events:none}
 .fever #feverFx{opacity:1}
+#feverFx i{position:absolute;display:block}
+#feverFx .glow{left:50%;top:calc(300px + var(--extra)/2);width:1100px;height:1100px;margin:-550px 0 0 -550px;
+ background:radial-gradient(closest-side,rgba(255,236,120,.7),rgba(255,120,190,.45) 40%,rgba(150,110,255,.2) 70%,rgba(150,110,255,0));
+ animation:feverPulse .5s ease-in-out infinite alternate}
+@keyframes feverPulse{from{transform:scale(.85);opacity:.7}to{transform:scale(1.05);opacity:1}}
 
 /* ---------- penguins ---------- */
 #penguins .pg{position:absolute;bottom:322px;height:250px;transform-origin:50% 100%}
