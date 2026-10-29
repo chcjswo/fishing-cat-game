@@ -235,6 +235,7 @@ class AdmobHandler {
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
+          debugPrint('전면 광고 로드 완료');
           _interstitialAd = ad;
           _isInterstitialAdLoaded = true;
         },
