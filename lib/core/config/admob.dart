@@ -20,6 +20,7 @@ class AdmobHandler {
   BannerAd? _bannerAd;
   InterstitialAd? _interstitialAd;
   bool _isInterstitialAdLoaded = false;
+  RewardedAd? _rewardedAd;
 
   // 광고 단위 ID 상수
   // 디버그 모드 테스트 광고 ID
@@ -31,6 +32,10 @@ class AdmobHandler {
       'ca-app-pub-3940256099942544/1033173712';
   static const String _debugInterstitialAdUnitIdIOS =
       'ca-app-pub-3940256099942544/4411468910';
+  static const String _debugRewardedAdUnitIdAndroid =
+      'ca-app-pub-3940256099942544/5224354917';
+  static const String _debugRewardedAdUnitIdIOS =
+      'ca-app-pub-3940256099942544/1712485313';
 
   // 프로덕션 모드 광고 ID
   // 배너는 아직 실제 ID가 없어 비워 둔다. 빈 ID면 로드를 건너뛴다.
@@ -40,6 +45,11 @@ class AdmobHandler {
       'ca-app-pub-1544792491473261/6722114497';
   static const String _prodInterstitialAdUnitIdIOS =
       'ca-app-pub-1544792491473261/9300176372';
+  // 보상형 광고의 AdMob 보상 항목은 'retry'(이어하기)다.
+  static const String _prodRewardedAdUnitIdAndroid =
+      'ca-app-pub-1544792491473261/1613258043';
+  static const String _prodRewardedAdUnitIdIOS =
+      'ca-app-pub-1544792491473261/7843624477';
 
   // 지원되는 플랫폼인지 확인
   bool get _isSupported {
@@ -93,6 +103,32 @@ class AdmobHandler {
     }
     if (Platform.isIOS) {
       return _prodInterstitialAdUnitIdIOS;
+    }
+
+    return '';
+  }
+
+  // 보상형 광고 ID 가져오기
+  String get _rewardedAdUnitId {
+    if (!_isSupported) {
+      isAdEnabled = false;
+      return '';
+    }
+
+    if (kDebugMode) {
+      if (Platform.isAndroid) {
+        return _debugRewardedAdUnitIdAndroid;
+      }
+      if (Platform.isIOS) {
+        return _debugRewardedAdUnitIdIOS;
+      }
+    }
+
+    if (Platform.isAndroid) {
+      return _prodRewardedAdUnitIdAndroid;
+    }
+    if (Platform.isIOS) {
+      return _prodRewardedAdUnitIdIOS;
     }
 
     return '';
@@ -230,9 +266,59 @@ class AdmobHandler {
     await _interstitialAd?.show();
   }
 
+  // 보상형 광고 미리 로드 (대기하지 않음)
+  void preloadRewardedAd() {
+    if (!isAdEnabled) return;
+
+    final adUnitId = _rewardedAdUnitId;
+    if (adUnitId.isEmpty) return;
+
+    RewardedAd.load(
+      adUnitId: adUnitId,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          debugPrint('보상형 광고 로드 완료');
+          _rewardedAd = ad;
+        },
+        onAdFailedToLoad: (error) {
+          debugPrint('보상형 광고 로드 실패: $error');
+          _rewardedAd = null;
+        },
+      ),
+    );
+  }
+
+  // 보상형 광고 표시. 광고가 준비되지 않았으면 false를 돌려준다.
+  // 끝까지 시청하면 onUserEarnedReward가 불린다.
+  Future<bool> showRewardedAd({
+    required void Function() onUserEarnedReward,
+  }) async {
+    final ad = _rewardedAd;
+    if (!isAdEnabled || ad == null) {
+      return false;
+    }
+    _rewardedAd = null;
+
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        preloadRewardedAd(); // 다음 광고 미리 로드 (non-blocking)
+      },
+      onAdFailedToShowFullScreenContent: (ad, error) {
+        ad.dispose();
+        preloadRewardedAd(); // 실패해도 다음 광고 미리 로드
+      },
+    );
+
+    await ad.show(onUserEarnedReward: (_, _) => onUserEarnedReward());
+    return true;
+  }
+
   // 리소스 정리
   void dispose() {
     _interstitialAd?.dispose();
+    _rewardedAd?.dispose();
     _bannerAd?.dispose();
   }
 }
