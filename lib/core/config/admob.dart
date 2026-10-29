@@ -144,6 +144,8 @@ class AdmobHandler {
     try {
       await MobileAds.instance.initialize();
       _loadBannerAd();
+      preloadNextAd();
+      preloadRewardedAd();
     } catch (e) {
       debugPrint('AdMob 초기화 실패: $e');
       isAdEnabled = false;
