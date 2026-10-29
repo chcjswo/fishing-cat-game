@@ -35,8 +35,10 @@ class AdmobHandler {
   // 프로덕션 모드 광고 ID
   static const String _prodBannerAdUnitIdAndroid = 'Android_배너_광고단위_아이디';
   static const String _prodBannerAdUnitIdIOS = 'iOS_배너_광고단위_아이디';
-  static const String _prodInterstitialAdUnitIdAndroid = 'Android_전면_광고단위_아이디';
-  static const String _prodInterstitialAdUnitIdIOS = 'iOS_전면_광고단위_아이디';
+  static const String _prodInterstitialAdUnitIdAndroid =
+      'ca-app-pub-1544792491473261/6722114497';
+  static const String _prodInterstitialAdUnitIdIOS =
+      'ca-app-pub-1544792491473261/9300176372';
 
   // 지원되는 플랫폼인지 확인
   bool get _isSupported {
