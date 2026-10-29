@@ -41,9 +41,9 @@
             android:name="flutterEmbedding"
             android:value="2" />
         <!-- 구글 애드몹 추가 -->
-        <!-- <meta-data
+        <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-2440925341572248~1444024611" /> -->
+            android:value="ca-app-pub-1544792491473261~3149700996" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
