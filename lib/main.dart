@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/config/admob.dart';
 import 'features/game/game_screen.dart';
 import 'shared/services/game_server.dart';
 
@@ -27,6 +30,9 @@ void main() async {
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   await gameServer.start();
+
+  // 광고 SDK 초기화·프리로드가 앱 기동을 막지 않도록 기다리지 않는다.
+  unawaited(AdmobHandler().initialize());
 
   // 스플래시는 게임 페이지가 다 로드된 뒤 GameScreen이 걷어낸다 (빈 화면 방지).
   runApp(ProviderScope(child: MyApp(minimumSplash: minimumSplash)));
