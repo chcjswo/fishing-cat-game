@@ -33,8 +33,9 @@ class AdmobHandler {
       'ca-app-pub-3940256099942544/4411468910';
 
   // 프로덕션 모드 광고 ID
-  static const String _prodBannerAdUnitIdAndroid = 'Android_배너_광고단위_아이디';
-  static const String _prodBannerAdUnitIdIOS = 'iOS_배너_광고단위_아이디';
+  // 배너는 아직 실제 ID가 없어 비워 둔다. 빈 ID면 로드를 건너뛴다.
+  static const String _prodBannerAdUnitIdAndroid = '';
+  static const String _prodBannerAdUnitIdIOS = '';
   static const String _prodInterstitialAdUnitIdAndroid =
       'ca-app-pub-1544792491473261/6722114497';
   static const String _prodInterstitialAdUnitIdIOS =
@@ -138,9 +139,12 @@ class AdmobHandler {
 
   // 배너 광고 로드
   void _loadBannerAd() {
+    final adUnitId = _bannerAdUnitId;
+    if (adUnitId.isEmpty) return;
+
     _bannerAd = BannerAd(
       size: AdSize.banner,
-      adUnitId: _bannerAdUnitId,
+      adUnitId: adUnitId,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           debugPrint('배너 광고 로드 완료');
