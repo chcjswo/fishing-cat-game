@@ -9,6 +9,7 @@ import '../../core/config/admob.dart';
 import '../../shared/models/game_scene.dart';
 import '../../shared/services/game_server.dart';
 import '../../shared/services/haptics.dart';
+import '../../shared/services/interstitial_policy.dart';
 import '../../shared/services/native_bridge.dart';
 import '../../shared/services/score_share.dart';
 import 'back_action.dart';
@@ -55,6 +56,13 @@ class _GameScreenState extends State<GameScreen> {
     AdmobHandler().setRewardedAdReadyCallback((_) => _sendReviveAdAvailable());
     // 이어하기 버튼 → 보상형 광고. 광고가 닫힌 뒤 같은 요청 ID로 결과를 알린다.
     _bridge.on('reviveAd', (payload) => _showReviveAd(payload['requestId']));
+    // 스테이지 클리어 후 다음 스테이지로 넘어가는 사이에 확률로 전면 광고.
+    _bridge.on('nextStage', (payload) {
+      final clearedStage = payload['clearedStage'];
+      if (clearedStage is num && shouldShowInterstitial(clearedStage.toInt())) {
+        AdmobHandler().showInterstitialAd();
+      }
+    });
     // 홈 이동·전화 수신 등으로 앱이 비활성화되면 플레이 중인 게임을 일시정지
     // 화면으로 돌린다. 게임의 visibilitychange 처리가 WebView에서 항상
     // 오지는 않으므로 앱 생명주기로 보완한다 (플레이 중 여부는 게임이 판단).
