@@ -53,6 +53,8 @@ class _GameScreenState extends State<GameScreen> {
     );
     // 보상형 광고가 준비되면 게임오버의 '광고 보고 이어하기' 버튼을 켠다.
     AdmobHandler().setRewardedAdReadyCallback((_) => _sendReviveAdAvailable());
+    // 이어하기 버튼 → 보상형 광고. 광고가 닫힌 뒤 같은 요청 ID로 결과를 알린다.
+    _bridge.on('reviveAd', (payload) => _showReviveAd(payload['requestId']));
     // 홈 이동·전화 수신 등으로 앱이 비활성화되면 플레이 중인 게임을 일시정지
     // 화면으로 돌린다. 게임의 visibilitychange 처리가 WebView에서 항상
     // 오지는 않으므로 앱 생명주기로 보완한다 (플레이 중 여부는 게임이 판단).
@@ -95,6 +97,15 @@ class _GameScreenState extends State<GameScreen> {
     await _webView?.evaluateJavascript(
       source:
           'window.GameControl && GameControl.setReviveAdAvailable && GameControl.setReviveAdAvailable($ready);',
+    );
+  }
+
+  Future<void> _showReviveAd(Object? requestId) async {
+    if (requestId is! num) return;
+    final rewarded = await AdmobHandler().showRewardedAd();
+    await _webView?.evaluateJavascript(
+      source:
+          'window.GameControl && GameControl.completeReviveAd && GameControl.completeReviveAd($requestId, $rewarded);',
     );
   }
 
