@@ -702,7 +702,6 @@ sb.addEventListener('click', toggleSound);
 $('#btnPauseSound').addEventListener('click', toggleSound);
 document.addEventListener('visibilitychange', ()=>{
   suspendMusic(document.hidden);
-  if(document.hidden && pendingReviveAd!==null) reviveAdInterrupted=true;
   if(document.hidden && S.running && (!S.paused || resumeTimer!==null)) pauseGame();
 });
 
