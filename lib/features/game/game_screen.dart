@@ -59,7 +59,11 @@ class _GameScreenState extends State<GameScreen> {
     // 화면으로 돌린다. 게임의 visibilitychange 처리가 WebView에서 항상
     // 오지는 않으므로 앱 생명주기로 보완한다 (플레이 중 여부는 게임이 판단).
     _lifecycle = AppLifecycleListener(
-      onInactive: () => _callGameControl('pause'),
+      // 전면 광고가 앱을 가려 비활성화된 경우는 이용자가 떠난 것이 아니므로
+      // 일시정지하지 않는다 (이어하기 광고 후 바로 3·2·1 카운트다운으로 재개).
+      onInactive: () {
+        if (!_showingAd) _callGameControl('pause');
+      },
       // 앱이 보이지 않는 동안에는 타이틀 음악 등 배경 음악이 새지 않게 멈춘다.
       onHide: () => _callGameControl('muteMusic'),
       onShow: () => _callGameControl('unmuteMusic'),
@@ -100,9 +104,14 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  /// 전체 화면 광고를 보여 주는 중이면 true.
+  bool _showingAd = false;
+
   Future<void> _showReviveAd(Object? requestId) async {
     if (requestId is! num) return;
+    _showingAd = true;
     final rewarded = await AdmobHandler().showRewardedAd();
+    _showingAd = false;
     await _webView?.evaluateJavascript(
       source:
           'window.GameControl && GameControl.completeReviveAd && GameControl.completeReviveAd($requestId, $rewarded);',
