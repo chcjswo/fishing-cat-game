@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
+import '../../core/config/admob.dart';
 import '../../shared/models/game_scene.dart';
 import '../../shared/services/game_server.dart';
 import '../../shared/services/haptics.dart';
@@ -50,6 +51,8 @@ class _GameScreenState extends State<GameScreen> {
       'share',
       (payload) => shareScore(payload, origin: _screenRect()),
     );
+    // 보상형 광고가 준비되면 게임오버의 '광고 보고 이어하기' 버튼을 켠다.
+    AdmobHandler().setRewardedAdReadyCallback((_) => _sendReviveAdAvailable());
     // 홈 이동·전화 수신 등으로 앱이 비활성화되면 플레이 중인 게임을 일시정지
     // 화면으로 돌린다. 게임의 visibilitychange 처리가 WebView에서 항상
     // 오지는 않으므로 앱 생명주기로 보완한다 (플레이 중 여부는 게임이 판단).
@@ -84,6 +87,14 @@ class _GameScreenState extends State<GameScreen> {
     await _webView?.evaluateJavascript(
       source:
           'window.GameControl && GameControl.setSafeTop && GameControl.setSafeTop($_safeTop);',
+    );
+  }
+
+  Future<void> _sendReviveAdAvailable() async {
+    final ready = AdmobHandler().isRewardedAdReady;
+    await _webView?.evaluateJavascript(
+      source:
+          'window.GameControl && GameControl.setReviveAdAvailable && GameControl.setReviveAdAvailable($ready);',
     );
   }
 
@@ -170,6 +181,7 @@ class _GameScreenState extends State<GameScreen> {
             // 함께 걷어낸다.
             onLoadStop: (_, _) {
               _sendSafeTop();
+              _sendReviveAdAvailable();
               _removeSplash();
             },
             onReceivedError: (_, _, _) => _removeSplash(),
