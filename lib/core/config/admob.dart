@@ -12,6 +12,7 @@ class AdmobHandler {
 
   // 상태 업데이트 콜백
   void Function()? _onBannerStateChanged;
+  void Function(bool ready)? _onRewardedAdReadyChanged;
 
   // 광고 활성화 여부
   static bool isAdEnabled = true;
@@ -162,6 +163,18 @@ class AdmobHandler {
     _onBannerStateChanged?.call();
   }
 
+  // 보상형 광고를 바로 보여 줄 수 있는지
+  bool get isRewardedAdReady => isAdEnabled && _rewardedAd != null;
+
+  // 보상형 광고 준비 상태가 바뀔 때 알림을 받는다.
+  void setRewardedAdReadyCallback(void Function(bool ready) callback) {
+    _onRewardedAdReadyChanged = callback;
+  }
+
+  void _notifyRewardedAdReadyChanged() {
+    _onRewardedAdReadyChanged?.call(isRewardedAdReady);
+  }
+
   // 배너 광고 위젯
   Widget getBannerAd() {
     if (!isAdEnabled || _bannerAd == null) {
@@ -283,10 +296,12 @@ class AdmobHandler {
         onAdLoaded: (ad) {
           debugPrint('보상형 광고 로드 완료');
           _rewardedAd = ad;
+          _notifyRewardedAdReadyChanged();
         },
         onAdFailedToLoad: (error) {
           debugPrint('보상형 광고 로드 실패: $error');
           _rewardedAd = null;
+          _notifyRewardedAdReadyChanged();
         },
       ),
     );
@@ -302,6 +317,7 @@ class AdmobHandler {
       return false;
     }
     _rewardedAd = null;
+    _notifyRewardedAdReadyChanged();
 
     ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) {
