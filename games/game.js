@@ -540,7 +540,7 @@ function endStage(timeUp, why){
     $('#resTotal').textContent=S.score.toLocaleString();
     $('#resBest').textContent=best.toLocaleString();
     const nb=$('#btnNext');
-    if(clear && !last){ nb.textContent='다음 스테이지'; nb.onclick=()=>{S.stage++; openIntro();}; }
+    if(clear && !last){ nb.textContent='다음 스테이지'; nb.onclick=()=>{notifyNative('nextStage',{clearedStage:S.stage+1}); S.stage++; openIntro();}; }
     else if(clear && last){ nb.textContent='다시 하기'; nb.onclick=()=>newGame(); }
     else { nb.textContent=gameOver?'현재 스테이지 처음부터 다시하기':'다시 도전'; nb.onclick=restartStage; }
     $('#shareRow').hidden=!window.NativeBridge||gameOver;
