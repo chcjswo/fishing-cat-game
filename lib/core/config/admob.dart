@@ -307,11 +307,9 @@ class AdmobHandler {
     );
   }
 
-  // 보상형 광고 표시. 광고가 준비되지 않았으면 false를 돌려준다.
-  // 끝까지 시청하면 onUserEarnedReward가 불린다.
-  Future<bool> showRewardedAd({
-    required void Function() onUserEarnedReward,
-  }) async {
+  // 보상형 광고 표시. 광고 화면이 닫힌 뒤, 끝까지 시청해 보상을 받았으면
+  // true를 돌려준다. 광고가 준비되지 않았거나 표시에 실패하면 false.
+  Future<bool> showRewardedAd() async {
     final ad = _rewardedAd;
     if (!isAdEnabled || ad == null) {
       return false;
@@ -319,19 +317,23 @@ class AdmobHandler {
     _rewardedAd = null;
     _notifyRewardedAdReadyChanged();
 
+    var earned = false;
+    final closed = Completer<bool>();
     ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) {
         ad.dispose();
         preloadRewardedAd(); // 다음 광고 미리 로드 (non-blocking)
+        closed.complete(earned);
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
         ad.dispose();
         preloadRewardedAd(); // 실패해도 다음 광고 미리 로드
+        closed.complete(false);
       },
     );
 
-    await ad.show(onUserEarnedReward: (_, _) => onUserEarnedReward());
-    return true;
+    await ad.show(onUserEarnedReward: (_, _) => earned = true);
+    return closed.future;
   }
 
   // 리소스 정리
